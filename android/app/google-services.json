@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "388276208544",
+    "project_id": "wibubarber",
+    "storage_bucket": "wibubarber.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:388276208544:android:32f3805abbbb4e9c855ac5",
+        "android_client_info": {
+          "package_name": "com.example.wibubarber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "388276208544-7nkauic54lee8ve70m15s2ado9trjmre.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvG0Tuuxx98vkZyycA6m6mmcPK9-7Aj2g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "388276208544-7nkauic54lee8ve70m15s2ado9trjmre.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "388276208544-n9rps1sotv019gisjfpa5ssa9e5qddt9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wibubarber"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
