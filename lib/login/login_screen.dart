@@ -1,7 +1,11 @@
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wibubarber/home/home_page.dart';
 import 'package:wibubarber/login/index.dart';
+import 'package:wibubarber/login/signup_screen.dart';
+import 'package:wibubarber/model/user_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -36,13 +40,13 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     TextEditingController userNameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    return BlocConsumer<LoginBloc, LoginState>(
+    return BlocBuilder<LoginBloc, LoginState>(
         bloc: widget._loginBloc,
-        listener: (context, state) {
-          if (state is LoginSuccessState) {
-            Navigator.of(context).pushNamed(HomePage.routeName);
-          }
-        },
+        // listener: (context, state) {
+        //   if (state is LoginSuccessState) {
+        //     Navigator.of(context).pushNamed(HomePage.routeName);
+        //   }
+        // },
         builder: (
           BuildContext context,
           LoginState currentState,
@@ -73,11 +77,20 @@ class LoginScreenState extends State<LoginScreen> {
           if (currentState is InLoginState) {
             userNameController.text = "duonghugama3@gmail.com";
             passwordController.text = "ditconmemay2";
-            return SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
+            if (currentState.user != null) {
+              Future.delayed(
+                Duration.zero,
+                () {
+                  Navigator.of(context).pushReplacementNamed(HomePage.routeName);
+                },
+              );
+            }
+            return Center(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(10.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     FlutterLogo(size: 160),
                     TextField(
@@ -85,7 +98,9 @@ class LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: "Tên đăng nhập hoặc Email",
                         border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       ),
+                      keyboardType: TextInputType.text,
                     ),
                     SizedBox(height: 10),
                     TextField(
@@ -94,19 +109,61 @@ class LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         labelText: "Password",
                         border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       ),
+                      keyboardType: TextInputType.visiblePassword,
                     ),
-                    ElevatedButton.icon(
+                    Row(
+                      children: [],
+                    ),
+                    ElevatedButton(
                       onPressed: () {
-                        widget._loginBloc.add(SignInEvent(userNameController.text, passwordController.text));
+                        if (EmailValidator.validate(userNameController.text)) {
+                          widget._loginBloc.add(
+                            SignInEvent("", userNameController.text, passwordController.text),
+                          );
+                        } else {
+                          widget._loginBloc.add(
+                            SignInEvent(userNameController.text, "", passwordController.text),
+                          );
+                        }
                       },
-                      icon: Icon(Icons.person),
-                      label: Text("Đăng nhập"),
+                      child: Text("Đăng nhập"),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: Icon(Icons.person_add),
-                      label: Text("Đăng ký"),
+                    // ElevatedButton.icon(
+                    //   onPressed: () {
+                    //     Navigator.of(context).push(
+                    //       MaterialPageRoute(
+                    //         builder: (context) => SignUpScreen(loginBloc: widget._loginBloc),
+                    //       ),
+                    //     );
+                    //   },
+                    //   icon: Icon(Icons.person_add),
+                    //   label: Text("Đăng ký"),
+                    // ),
+                    Row(
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "Bạn chưa có tài khoản? ",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              TextSpan(
+                                text: "Đăng ký",
+                                style: TextStyle(color: Colors.blue),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => HomePage(),
+                                        ),
+                                      ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

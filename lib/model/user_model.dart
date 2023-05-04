@@ -1,26 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-class User extends Equatable {
-  const User({
-    required this.id,
-    this.email,
-    this.name,
-    this.photo,
-  });
-  final String? email;
-
-  final String id;
-
-  final String? name;
-
-  final String? photo;
-
-  static const empty = User(id: '');
-
-  bool get isEmpty => this == User.empty;
-
-  bool get isNotEmpty => this != User.empty;
+class UserModel extends Equatable {
+  final String username;
+  final String email;
+  final List<String>? permission;
+  UserModel(this.username, this.email, this.permission);
 
   @override
-  List<Object?> get props => [email, id, name, photo];
+  List<Object?> get props => [username, email];
+
+  Map<String, dynamic> toJson() => {'username': username, 'email': email, 'permission': permission};
 }

@@ -30,5 +30,6 @@ linter:
     prefer_const_literals_to_create_immutables: false
     use_key_in_widget_constructors: false
     library_private_types_in_public_api: false
+    depend_on_referenced_packages: false
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

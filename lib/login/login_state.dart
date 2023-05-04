@@ -1,10 +1,11 @@
 import 'package:equatable/equatable.dart';
+import 'package:wibubarber/model/user_model.dart';
 
 abstract class LoginState extends Equatable {
   LoginState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 /// UnInitialized
@@ -14,8 +15,11 @@ class UnLoginState extends LoginState {
 
 /// Initialized
 class InLoginState extends LoginState {
+  final UserModel? user;
+
+  InLoginState(this.user);
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [user];
 }
 
 class LoginSuccessState extends LoginState {
@@ -30,4 +34,12 @@ class ErrorLoginState extends LoginState {
 
   @override
   List<Object> get props => [errorMessage];
+}
+
+class CreateUserSuccessState extends LoginState {
+  final String email;
+
+  CreateUserSuccessState(this.email);
+  @override
+  List<Object?> get props => [email];
 }
