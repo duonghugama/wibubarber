@@ -1,24 +1,69 @@
+import 'dart:io';
+
 import 'package:duration_picker/duration_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wibubarber/model/style_model.dart';
 import 'package:wibubarber/style/index.dart';
 
 class AddStyleScreen extends StatefulWidget {
-  const AddStyleScreen({super.key});
+  final StyleModel? styleModel;
+  AddStyleScreen({super.key, this.styleModel});
 
   @override
   State<AddStyleScreen> createState() => _AddStyleScreenState();
 }
 
 class _AddStyleScreenState extends State<AddStyleScreen> {
+  PlatformFile? pickedFile;
   TextEditingController styleNameController = TextEditingController();
   TextEditingController stylePriceController = TextEditingController();
   TextEditingController styleDecriptionController = TextEditingController();
   TextEditingController styleTimeController = TextEditingController();
   List<String> styleTypes = ["Kiểu tóc", "Kiểu râu", "Khác"];
   String drowdownValue = "Kiểu tóc";
+  final _formKey = GlobalKey<FormState>();
+
   formatDuration(Duration d) => d.toString().split('.').first.padLeft(8, "0");
+  Widget _image(String? path) {
+    if (path != null) {
+      return Image.file(
+        File(path),
+        fit: BoxFit.cover,
+      );
+    }
+    if (widget.styleModel?.imageURL != null &&
+        widget.styleModel?.imageURL != "") {
+      return Image.network(
+        widget.styleModel!.imageURL!,
+        fit: BoxFit.cover,
+      );
+    }
+    return Icon(Icons.add_a_photo);
+  }
+
+  Future selectFile() async {
+    final result = await FilePicker.platform.pickFiles();
+    if (result != null) {
+      setState(() {
+        pickedFile = result.files.first;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    if (widget.styleModel != null) {
+      styleNameController.text = widget.styleModel!.styleName ?? "";
+      stylePriceController.text =
+          widget.styleModel!.stylePrice?.toString() ?? "";
+      styleTimeController.text = widget.styleModel!.styleTime ?? "";
+      styleDecriptionController.text = widget.styleModel!.description ?? "";
+      drowdownValue = widget.styleModel!.styleType ?? "Kiểu tóc";
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +71,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
       listener: (context, state) {
         if (state is AddStyleSuccessState) {
           final snackBar = SnackBar(
-            content: const Text('Thêm style thành công'),
+            content: Text('Thêm ${drowdownValue.toLowerCase()} thành công'),
           );
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
@@ -39,89 +84,137 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.all(10),
-            child: Column(
-              children: [
-                TextField(
-                  controller: styleNameController,
-                  decoration: InputDecoration(
-                    labelText: "Tên style",
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  ),
-                  keyboardType: TextInputType.text,
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: stylePriceController,
-                  decoration: InputDecoration(
-                    labelText: "Giá",
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-                SizedBox(height: 10),
-                DropdownButtonHideUnderline(
-                  child: DropdownButtonFormField<String>(
-                    decoration: InputDecoration(
-                      labelText: "Loại style",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: selectFile,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.3,
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        color: Colors.grey[300],
+                        child: _image(pickedFile?.path),
+                      ),
                     ),
-                    value: drowdownValue,
-                    items: styleTypes
-                        .map((e) => DropdownMenuItem<String>(
-                              value: e,
-                              child: Text(e),
-                            ))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        drowdownValue = value!;
-                      });
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: styleNameController,
+                    decoration: InputDecoration(
+                      labelText: "Tên style",
+                      border: OutlineInputBorder(),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    ),
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Nhập tên';
+                      }
+                      return null;
                     },
                   ),
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: styleTimeController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    labelText: "Thời gian",
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: stylePriceController,
+                    decoration: InputDecoration(
+                      labelText: "Giá",
+                      border: OutlineInputBorder(),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Nhập giá của style';
+                      }
+                      return null;
+                    },
                   ),
-                  onTap: () {
-                    setState(() {
-                      openDialog();
-                    });
-                  },
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  controller: styleDecriptionController,
-                  decoration: InputDecoration(
-                    labelText: "Mô tả",
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  SizedBox(height: 10),
+                  DropdownButtonHideUnderline(
+                    child: DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: "Loại style",
+                        border: OutlineInputBorder(),
+                        contentPadding:
+                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      ),
+                      value: drowdownValue,
+                      items: styleTypes
+                          .map((e) => DropdownMenuItem<String>(
+                                value: e,
+                                child: Text(e),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          drowdownValue = value!;
+                        });
+                      },
+                    ),
                   ),
-                  keyboardType: TextInputType.text,
-                ),
-                SizedBox(height: 10),
-              ],
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: styleTimeController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: "Thời gian",
+                      border: OutlineInputBorder(),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        openDialog();
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Nhập khoảng thời gian thực hiện';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                    controller: styleDecriptionController,
+                    decoration: InputDecoration(
+                      labelText: "Mô tả",
+                      border: OutlineInputBorder(),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                    ),
+                    keyboardType: TextInputType.text,
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
             ),
           ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            StyleModel model = StyleModel(
-              styleType: drowdownValue,
-              styleTime: styleTimeController.text,
-              styleName: styleNameController.text,
-              stylePrice: int.parse(stylePriceController.text),
-              description: styleDecriptionController.text,
-            );
-            BlocProvider.of<StyleBloc>(context).add(AddStyleEvent(model));
+            if (_formKey.currentState!.validate()) {
+              StyleModel model = StyleModel(
+                styleType: drowdownValue,
+                styleTime: styleTimeController.text,
+                styleName: styleNameController.text,
+                stylePrice: int.parse(stylePriceController.text),
+                description: styleDecriptionController.text,
+              );
+              if (widget.styleModel == null) {
+                BlocProvider.of<StyleBloc>(context)
+                    .add(AddStyleEvent(model, pickedFile));
+              } else {
+                BlocProvider.of<StyleBloc>(context)
+                    .add(UpdateStyleEvent(model, pickedFile));
+              }
+            }
           },
           child: Icon(Icons.save),
         ),

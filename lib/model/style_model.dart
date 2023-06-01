@@ -6,19 +6,20 @@ class StyleModel extends Equatable {
   final String? styleTime;
   final int? stylePrice;
   final String? description;
-
-  StyleModel({this.styleName, this.styleType, this.styleTime, this.stylePrice, this.description});
+  final String? imageURL;
+  StyleModel({this.styleName, this.styleType, this.styleTime, this.stylePrice, this.description, this.imageURL});
 
   @override
   List<Object?> get props => [];
 
-  factory StyleModel.fromObject(Map json) {
+  factory StyleModel.fromJson(Map json) {
     return StyleModel(
       styleName: json["styleName"],
       description: json["description"],
       stylePrice: json["stylePrice"],
       styleTime: json["styleTime"],
       styleType: json["styleType"],
+      imageURL: json["imageURL"],
     );
   }
   Map<String, dynamic> toJson() => {
@@ -27,7 +28,8 @@ class StyleModel extends Equatable {
           'stylePrice': stylePrice,
           'styleTime': styleTime,
           'styleType': styleType,
-          'styleName': styleName
+          'styleName': styleName,
+          'imageURL': imageURL ?? ""
         }
       };
 }

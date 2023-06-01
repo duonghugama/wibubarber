@@ -36,15 +36,22 @@ dependencies:
   duration_picker: ^1.1.1
   email_validator: ^2.1.17
   equatable: ^2.0.5
+  file_picker: ^5.2.11
+  firebase_app_check: ^0.1.4
   firebase_auth: ^4.3.0
   firebase_core: ^2.7.0
   firebase_database: ^10.1.0
+  firebase_storage: ^11.2.0
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.2
+  flutter_slidable: ^3.0.0
   fluttericon: ^2.0.0
+  fluttertoast: ^8.2.1
   intl: ^0.17.0
   path_provider: ^2.0.14
+  qr_code_scanner: ^1.0.0
+  qr_flutter: ^4.0.0
 
 dev_dependencies:
   flutter_lints: ^2.0.0

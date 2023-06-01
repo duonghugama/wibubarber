@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wibubarber/style/index.dart';
 import 'package:intl/intl.dart';
 
+import 'add_style_screen.dart';
+
 class StyleScreen extends StatefulWidget {
   const StyleScreen({
     required StyleBloc styleBloc,
@@ -79,19 +81,40 @@ class StyleScreenState extends State<StyleScreen> {
         }
         if (currentState is InStyleState) {
           if (currentState.styles != null) {
-            return ListView.builder(
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
               itemCount: currentState.styles?.length ?? 0,
               itemBuilder: (context, index) {
                 List<String> timeParts = currentState.styles![index].styleTime!.split(':');
                 Duration duration = Duration(
                     hours: int.parse(timeParts[0]), minutes: int.parse(timeParts[1]), seconds: int.parse(timeParts[2]));
-                return Card(
-                  child: ListTile(
-                    title: Text(currentState.styles![index].styleName ?? ""),
-                    // subtitle: Text("${currentState.styles![index].stylePrice} đ"),
-                    subtitle: Text(f.format(currentState.styles![index].stylePrice)),
-                    // trailing: Text("Thời gian: ${currentState.styles![index].styleTime}"),
-                    trailing: Text("Thời gian: ${duration.inMinutes} phút"),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AddStyleScreen(
+                          styleModel: currentState.styles![index],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Card(
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: Text("${duration.inMinutes} phút"),
+                        ),
+                        Positioned(
+                          bottom: 10,
+                          left: 10,
+                          right: 10,
+                          child: Text(
+                              "${currentState.styles![index].styleName ?? ""} - ${f.format(currentState.styles![index].stylePrice)}"),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },

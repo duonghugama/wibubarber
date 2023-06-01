@@ -40,13 +40,15 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     TextEditingController userNameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
-    return BlocBuilder<LoginBloc, LoginState>(
+    return BlocConsumer<LoginBloc, LoginState>(
         bloc: widget._loginBloc,
-        // listener: (context, state) {
-        //   if (state is LoginSuccessState) {
-        //     Navigator.of(context).pushNamed(HomePage.routeName);
-        //   }
-        // },
+        listener: (context, state) {
+          if (state is LoginSuccessState) {
+            Navigator.of(context).pushNamed(
+              HomePage.routeName,
+            );
+          }
+        },
         builder: (
           BuildContext context,
           LoginState currentState,
@@ -77,14 +79,7 @@ class LoginScreenState extends State<LoginScreen> {
           if (currentState is InLoginState) {
             userNameController.text = "duonghugama3@gmail.com";
             passwordController.text = "ditconmemay2";
-            if (currentState.user != null) {
-              Future.delayed(
-                Duration.zero,
-                () {
-                  Navigator.of(context).pushReplacementNamed(HomePage.routeName);
-                },
-              );
-            }
+
             return Center(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(10.0),

@@ -37,7 +37,8 @@ class SignInEvent extends LoginEvent {
       }
       final userLogin = FirebaseAuth.instance.currentUser ?? "";
       if (userLogin != "") {
-        yield InLoginState(UserModel("", email, null));
+        yield InLoginState(UserModel(username, email, null));
+        yield LoginSuccessState();
       }
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadLoginEvent', error: _, stackTrace: stackTrace);
@@ -56,6 +57,7 @@ class LoadLoginEvent extends LoginEvent {
         yield InLoginState(
           UserModel(auth.currentUser!.uid, auth.currentUser!.email ?? "", null),
         );
+        yield LoginSuccessState();
       } else {
         yield InLoginState(null);
       }
@@ -71,6 +73,7 @@ class LogoutEvent extends LoginEvent {
   Stream<LoginState> applyAsync({LoginState? currentState, LoginBloc? bloc}) async* {
     try {
       await FirebaseAuth.instance.signOut();
+      yield LogoutState();
       yield InLoginState(null);
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadLoginEvent', error: _, stackTrace: stackTrace);

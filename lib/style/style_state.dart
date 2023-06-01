@@ -31,6 +31,11 @@ class AddStyleSuccessState extends StyleState {
   List<Object> get props => [];
 }
 
+class UpdateStyleSuccessState extends StyleState {
+  @override
+  List<Object> get props => [];
+}
+
 class ErrorStyleState extends StyleState {
   ErrorStyleState(this.errorMessage);
 
