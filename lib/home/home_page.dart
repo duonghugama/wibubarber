@@ -25,7 +25,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     Future<bool> onWillPop() {
       DateTime now = DateTime.now();
-      if (currentBackPressTime == null || now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
+      if (currentBackPressTime == null ||
+          now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
         currentBackPressTime = now;
         Fluttertoast.showToast(
           msg: "Ấn lần nữa để thoát",
@@ -40,7 +41,9 @@ class _HomePageState extends State<HomePage> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LogoutState) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          // Navigator.of(context).popUntil((route) => route.isFirst);
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(LoginPage.routeName, (Route<dynamic> route) => false);
         }
       },
       child: WillPopScope(
@@ -114,7 +117,8 @@ class _HomePageState extends State<HomePage> {
                   child: FlutterLogo(size: 50),
                 ),
                 ListTile(
-                  leading: FlutterLogo(),
+                  // leading: FlutterLogo(),
+                  title: Text("Đăng ký làm thợ"),
                   onTap: () {},
                 ),
                 Spacer(),

@@ -31,7 +31,19 @@ class SignInEvent extends LoginEvent {
     try {
       yield UnLoginState();
       if (username != "") {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+        await FirebaseFirestore.instance
+            .collection('users')
+            .where("username", isEqualTo: username)
+            .get()
+            .then(
+              (value) async => {
+                if (value.size > 0)
+                  {
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                        email: value.docs[0].data()['email'].toString(), password: password)
+                  }
+              },
+            );
       } else {
         await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       }

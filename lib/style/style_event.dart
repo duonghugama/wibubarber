@@ -17,14 +17,16 @@ abstract class StyleEvent {
 
 class LoadStyleEvent extends StyleEvent {
   @override
-  Stream<StyleState> applyAsync({StyleState? currentState, StyleBloc? bloc}) async* {
+  Stream<StyleState> applyAsync(
+      {StyleState? currentState, StyleBloc? bloc}) async* {
     try {
       yield UnStyleState();
       StyleEvent.styles.clear();
       await getStyle();
       yield InStyleState(StyleEvent.styles);
     } catch (_, stackTrace) {
-      developer.log('$_', name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
+      developer.log('$_',
+          name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
       yield ErrorStyleState(_.toString());
     }
   }
@@ -50,7 +52,8 @@ class AddStyleEvent extends StyleEvent {
 
   AddStyleEvent(this.style, this.image);
   @override
-  Stream<StyleState> applyAsync({StyleState? currentState, StyleBloc? bloc}) async* {
+  Stream<StyleState> applyAsync(
+      {StyleState? currentState, StyleBloc? bloc}) async* {
     try {
       DatabaseReference dataRef = FirebaseDatabase.instance.ref("style");
       // if (image != null) {
@@ -79,32 +82,68 @@ class AddStyleEvent extends StyleEvent {
       await Future.delayed(Duration(milliseconds: 100));
       yield InStyleState(StyleEvent.styles);
     } catch (_, stackTrace) {
-      developer.log('$_', name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
+      developer.log('$_',
+          name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
       yield ErrorStyleState(_.toString());
     }
   }
 }
 
 class UpdateStyleEvent extends StyleEvent {
-  final StyleModel styleModel;
+  final StyleModel style;
   final PlatformFile? image;
 
-  UpdateStyleEvent(this.styleModel, this.image);
+  UpdateStyleEvent(this.style, this.image);
   @override
-  Stream<StyleState> applyAsync({StyleState? currentState, StyleBloc? bloc}) async* {
+  Stream<StyleState> applyAsync(
+      {StyleState? currentState, StyleBloc? bloc}) async* {
     try {
       DatabaseReference dataRef = FirebaseDatabase.instance.ref("style");
-      final storageRef = FirebaseStorage.instance.ref("style");
+      String url = "";
+      String path = "${style.styleName?.replaceAll(' ', '-')}";
       if (image != null) {
-        await storageRef.putFile(File(image!.path!));
+        final storageRef = FirebaseStorage.instance.ref("style").child(path);
+        File file = File(image!.path!);
+        UploadTask uploadTask = storageRef.putFile(file);
+        var dowurl = await (await uploadTask).ref.getDownloadURL();
+        url = dowurl.toString();
       }
+      StyleModel styleModel = StyleModel(
+        styleName: style.styleName,
+        description: style.description,
+        styleTime: style.styleTime,
+        stylePrice: style.stylePrice,
+        styleType: style.styleType,
+        imageURL: url,
+      );
       await dataRef.update(styleModel.toJson());
-      StyleEvent.styles.add(styleModel);
       yield UpdateStyleSuccessState();
       await Future.delayed(Duration(milliseconds: 100));
       yield InStyleState(StyleEvent.styles);
     } catch (_, stackTrace) {
-      developer.log('$_', name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
+      developer.log('$_',
+          name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
+      yield ErrorStyleState(_.toString());
+    }
+  }
+}
+
+class DeleteStyleEvent extends StyleEvent {
+  final StyleModel style;
+  DeleteStyleEvent(this.style);
+
+  @override
+  Stream<StyleState> applyAsync(
+      {StyleState? currentState, StyleBloc? bloc}) async* {
+    try {
+      DatabaseReference dataRef = FirebaseDatabase.instance.ref("style");
+      dataRef.child(style.styleName!).remove();
+      yield DeleteStyleSuccessState();
+      await Future.delayed(Duration(seconds: 1));
+      yield InStyleState(StyleEvent.styles);
+    } catch (_, stackTrace) {
+      developer.log('$_',
+          name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
       yield ErrorStyleState(_.toString());
     }
   }

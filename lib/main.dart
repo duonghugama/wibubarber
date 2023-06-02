@@ -42,6 +42,7 @@ class MyApp extends StatelessWidget {
           initialRoute: LoginPage.routeName,
           onGenerateRoute: onGenerateRoute,
           themeMode: ThemeMode.dark,
+          // theme: ThemeData(fontFamily: 'Anime'),
         );
       }),
     );

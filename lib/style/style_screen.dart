@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wibubarber/model/style_model.dart';
 import 'package:wibubarber/style/index.dart';
 import 'package:intl/intl.dart';
 
@@ -42,6 +45,28 @@ class StyleScreenState extends State<StyleScreen> {
     super.dispose();
   }
 
+  Widget image(StyleModel? model) {
+    if (model?.imageURL != null && model?.imageURL != "") {
+      return Image.network(
+        model!.imageURL!,
+        fit: BoxFit.cover,
+      );
+    }
+    return Container(
+      color: Colors.grey[200],
+      child: Center(
+        child: Image.asset(
+          "lib/asset/no-photos.png",
+          width: 100,
+          height: 100,
+        ),
+      ),
+    );
+  }
+
+  TextStyle whiteText = TextStyle(color: Colors.white, fontSize: 16);
+  TextStyle yellowText = TextStyle(color: Colors.yellow[300], fontSize: 18);
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<StyleBloc, StyleState>(
@@ -82,12 +107,17 @@ class StyleScreenState extends State<StyleScreen> {
         if (currentState is InStyleState) {
           if (currentState.styles != null) {
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              gridDelegate:
+                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
               itemCount: currentState.styles?.length ?? 0,
               itemBuilder: (context, index) {
-                List<String> timeParts = currentState.styles![index].styleTime!.split(':');
+                List<String> timeParts =
+                    currentState.styles![index].styleTime!.split(':');
                 Duration duration = Duration(
-                    hours: int.parse(timeParts[0]), minutes: int.parse(timeParts[1]), seconds: int.parse(timeParts[2]));
+                  hours: int.parse(timeParts[0]),
+                  minutes: int.parse(timeParts[1]),
+                  seconds: int.parse(timeParts[2]),
+                );
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -99,19 +129,60 @@ class StyleScreenState extends State<StyleScreen> {
                     );
                   },
                   child: Card(
+                    semanticContainer: true,
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    elevation: 2,
                     child: Stack(
                       children: [
-                        Positioned(
-                          top: 10,
-                          right: 10,
-                          child: Text("${duration.inMinutes} phút"),
+                        image(currentState.styles![index]),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                // Colors.black.withAlpha(0),
+                                Colors.black12,
+                                Colors.black26,
+                                Colors.black.withAlpha(0),
+                              ],
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                "${duration.inMinutes} phút",
+                                style: yellowText,
+                              ),
+                            ],
+                          ),
                         ),
                         Positioned(
-                          bottom: 10,
-                          left: 10,
-                          right: 10,
-                          child: Text(
-                              "${currentState.styles![index].styleName ?? ""} - ${f.format(currentState.styles![index].stylePrice)}"),
+                          bottom: 1,
+                          right: 0,
+                          left: 0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withAlpha(0),
+                                  Colors.black26,
+                                  Colors.black12,
+                                  Colors.black.withAlpha(0),
+                                ],
+                              ),
+                            ),
+                            child: Text(
+                              "${currentState.styles![index].styleName ?? ""} - ${f.format(currentState.styles![index].stylePrice)}",
+                              style: whiteText,
+                            ),
+                          ),
                         ),
                       ],
                     ),

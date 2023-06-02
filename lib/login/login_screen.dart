@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wibubarber/home/home_page.dart';
 import 'package:wibubarber/login/index.dart';
-import 'package:wibubarber/login/signup_screen.dart';
-import 'package:wibubarber/model/user_model.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -77,7 +75,7 @@ class LoginScreenState extends State<LoginScreen> {
             ));
           }
           if (currentState is InLoginState) {
-            userNameController.text = "duonghugama3@gmail.com";
+            userNameController.text = "Admin";
             passwordController.text = "ditconmemay2";
 
             return Center(

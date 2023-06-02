@@ -33,8 +33,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
         fit: BoxFit.cover,
       );
     }
-    if (widget.styleModel?.imageURL != null &&
-        widget.styleModel?.imageURL != "") {
+    if (widget.styleModel?.imageURL != null && widget.styleModel?.imageURL != "") {
       return Image.network(
         widget.styleModel!.imageURL!,
         fit: BoxFit.cover,
@@ -56,8 +55,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
   void initState() {
     if (widget.styleModel != null) {
       styleNameController.text = widget.styleModel!.styleName ?? "";
-      stylePriceController.text =
-          widget.styleModel!.stylePrice?.toString() ?? "";
+      stylePriceController.text = widget.styleModel!.stylePrice?.toString() ?? "";
       styleTimeController.text = widget.styleModel!.styleTime ?? "";
       styleDecriptionController.text = widget.styleModel!.description ?? "";
       drowdownValue = widget.styleModel!.styleType ?? "Kiểu tóc";
@@ -79,7 +77,24 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Thêm style"),
+          title: Text(widget.styleModel == null
+              ? "Thêm style"
+              : widget.styleModel!.styleName ?? "Sửa style"),
+          actions: [
+            widget.styleModel != null
+                ? IconButton(
+                    onPressed: () {
+                      if (widget.styleModel != null) {
+                        BlocProvider.of<StyleBloc>(context)
+                            .add(DeleteStyleEvent(widget.styleModel!));
+                        BlocProvider.of<StyleBloc>(context).add(LoadStyleEvent());
+                        Navigator.pop(context);
+                      }
+                    },
+                    icon: Icon(Icons.delete),
+                  )
+                : Container(),
+          ],
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -107,8 +122,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
                     decoration: InputDecoration(
                       labelText: "Tên style",
                       border: OutlineInputBorder(),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                     ),
                     keyboardType: TextInputType.text,
                     validator: (value) {
@@ -124,8 +138,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
                     decoration: InputDecoration(
                       labelText: "Giá",
                       border: OutlineInputBorder(),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
@@ -141,8 +154,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
                       decoration: InputDecoration(
                         labelText: "Loại style",
                         border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                       ),
                       value: drowdownValue,
                       items: styleTypes
@@ -165,8 +177,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
                     decoration: InputDecoration(
                       labelText: "Thời gian",
                       border: OutlineInputBorder(),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                     ),
                     onTap: () {
                       setState(() {
@@ -186,8 +197,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
                     decoration: InputDecoration(
                       labelText: "Mô tả",
                       border: OutlineInputBorder(),
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
                     ),
                     keyboardType: TextInputType.text,
                   ),
@@ -208,11 +218,13 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
                 description: styleDecriptionController.text,
               );
               if (widget.styleModel == null) {
-                BlocProvider.of<StyleBloc>(context)
-                    .add(AddStyleEvent(model, pickedFile));
+                BlocProvider.of<StyleBloc>(context).add(AddStyleEvent(model, pickedFile));
+                Navigator.pop(context);
+                BlocProvider.of<StyleBloc>(context).add(LoadStyleEvent());
               } else {
-                BlocProvider.of<StyleBloc>(context)
-                    .add(UpdateStyleEvent(model, pickedFile));
+                BlocProvider.of<StyleBloc>(context).add(UpdateStyleEvent(model, pickedFile));
+                Navigator.pop(context);
+                BlocProvider.of<StyleBloc>(context).add(LoadStyleEvent());
               }
             }
           },
