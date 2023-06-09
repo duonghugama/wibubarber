@@ -58,7 +58,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
       stylePriceController.text = widget.styleModel!.stylePrice?.toString() ?? "";
       styleTimeController.text = widget.styleModel!.styleTime ?? "";
       styleDecriptionController.text = widget.styleModel!.description ?? "";
-      drowdownValue = widget.styleModel!.styleType ?? "Kiểu tóc";
+      // drowdownValue = widget.styleModel!.styleType ?? "Kiểu tóc";
     }
     super.initState();
   }
@@ -77,16 +77,13 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.styleModel == null
-              ? "Thêm style"
-              : widget.styleModel!.styleName ?? "Sửa style"),
+          title: Text(widget.styleModel == null ? "Thêm style" : widget.styleModel!.styleName ?? "Sửa style"),
           actions: [
             widget.styleModel != null
                 ? IconButton(
                     onPressed: () {
                       if (widget.styleModel != null) {
-                        BlocProvider.of<StyleBloc>(context)
-                            .add(DeleteStyleEvent(widget.styleModel!));
+                        BlocProvider.of<StyleBloc>(context).add(DeleteStyleEvent(widget.styleModel!));
                         BlocProvider.of<StyleBloc>(context).add(LoadStyleEvent());
                         Navigator.pop(context);
                       }
@@ -149,27 +146,27 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
                     },
                   ),
                   SizedBox(height: 10),
-                  DropdownButtonHideUnderline(
-                    child: DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: "Loại style",
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                      ),
-                      value: drowdownValue,
-                      items: styleTypes
-                          .map((e) => DropdownMenuItem<String>(
-                                value: e,
-                                child: Text(e),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          drowdownValue = value!;
-                        });
-                      },
-                    ),
-                  ),
+                  // DropdownButtonHideUnderline(
+                  //   child: DropdownButtonFormField<String>(
+                  //     decoration: InputDecoration(
+                  //       labelText: "Loại style",
+                  //       border: OutlineInputBorder(),
+                  //       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                  //     ),
+                  //     value: drowdownValue,
+                  //     items: styleTypes
+                  //         .map((e) => DropdownMenuItem<String>(
+                  //               value: e,
+                  //               child: Text(e),
+                  //             ))
+                  //         .toList(),
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         drowdownValue = value!;
+                  //       });
+                  //     },
+                  //   ),
+                  // ),
                   SizedBox(height: 10),
                   TextFormField(
                     controller: styleTimeController,
@@ -211,7 +208,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               StyleModel model = StyleModel(
-                styleType: drowdownValue,
+                // styleType: drowdownValue,
                 styleTime: styleTimeController.text,
                 styleName: styleNameController.text,
                 stylePrice: int.parse(stylePriceController.text),

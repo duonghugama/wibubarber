@@ -2,13 +2,11 @@ import 'package:equatable/equatable.dart';
 
 class StyleModel extends Equatable {
   final String? styleName;
-  final String? styleType;
   final String? styleTime;
   final int? stylePrice;
   final String? description;
   final String? imageURL;
-  StyleModel(
-      {this.styleName, this.styleType, this.styleTime, this.stylePrice, this.description, this.imageURL});
+  StyleModel({this.styleName, this.styleTime, this.stylePrice, this.description, this.imageURL});
 
   @override
   List<Object?> get props => [];
@@ -19,7 +17,6 @@ class StyleModel extends Equatable {
       description: json["description"],
       stylePrice: json["stylePrice"],
       styleTime: json["styleTime"],
-      styleType: json["styleType"],
       imageURL: json["imageURL"],
     );
   }
@@ -28,23 +25,22 @@ class StyleModel extends Equatable {
           'description': description,
           'stylePrice': stylePrice,
           'styleTime': styleTime,
-          'styleType': styleType,
           'styleName': styleName,
           'imageURL': imageURL ?? ""
         }
       };
 }
 
-class ColorStyle {
+class ColorModel {
   final String? hex;
   int? price;
   String? time;
   final String name;
 
-  ColorStyle({this.hex, this.price, this.time, required this.name});
+  ColorModel({this.hex, this.price, this.time, required this.name});
 
-  factory ColorStyle.fromJson(Map<String, dynamic> json) {
-    return ColorStyle(
+  factory ColorModel.fromJson(Map json) {
+    return ColorModel(
       name: json['name'],
       hex: json['hex'],
       price: json['price'],

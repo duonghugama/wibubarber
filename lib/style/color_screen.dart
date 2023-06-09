@@ -16,6 +16,25 @@ class _ColorScreenState extends State<ColorScreen> {
     return BlocBuilder<StyleBloc, StyleState>(
       bloc: widget._styleBloc,
       builder: (context, state) {
+        if (state is InStyleState)
+          return Wrap(
+            children: state.colors!
+                .map(
+                  (e) => Card(
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Colors.red,
+                          height: 100,
+                          width: MediaQuery.of(context).size.width * 0.2,
+                        ),
+                        Text(e.name)
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
+          );
         return Container();
       },
     );

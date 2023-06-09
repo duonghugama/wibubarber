@@ -102,7 +102,11 @@ class StyleScreenState extends State<StyleScreen> {
         if (currentState is InStyleState) {
           if (currentState.styles != null) {
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio:
+                    MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 1.8),
+              ),
               itemCount: currentState.styles?.length ?? 0,
               itemBuilder: (context, index) {
                 List<String> timeParts = currentState.styles![index].styleTime!.split(':');
@@ -131,31 +135,8 @@ class StyleScreenState extends State<StyleScreen> {
                     child: Stack(
                       children: [
                         image(currentState.styles![index]),
-                        // Container(
-                        //   decoration: BoxDecoration(
-                        //     gradient: LinearGradient(
-                        //       begin: Alignment.topCenter,
-                        //       end: Alignment.bottomCenter,
-                        //       colors: [
-                        //         //Colors.black.withAlpha(0),
-                        //         Colors.black12,
-                        //         Colors.black26,
-                        //         Colors.black.withAlpha(0),
-                        //       ],
-                        //     ),
-                        //   ),
-                        //   child: Row(
-                        //     mainAxisAlignment: MainAxisAlignment.end,
-                        //     children: [
-                        //       Text(
-                        //         "",
-                        //         style: whiteText,
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
                         Positioned(
-                          bottom: 1,
+                          bottom: 0,
                           right: 0,
                           left: 0,
                           child: Container(

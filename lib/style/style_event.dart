@@ -12,6 +12,7 @@ import 'package:wibubarber/style/index.dart';
 @immutable
 abstract class StyleEvent {
   static List<StyleModel> styles = [];
+  static List<ColorModel> colors = [];
   Stream<StyleState> applyAsync({StyleState currentState, StyleBloc bloc});
 }
 
@@ -21,8 +22,10 @@ class LoadStyleEvent extends StyleEvent {
     try {
       yield UnStyleState();
       StyleEvent.styles.clear();
+      StyleEvent.colors.clear();
       await getStyle();
-      yield InStyleState(StyleEvent.styles);
+      await getColors();
+      yield InStyleState(StyleEvent.styles, StyleEvent.colors);
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
       yield ErrorStyleState(_.toString());
@@ -37,6 +40,20 @@ Future<bool> getStyle() async {
     for (final child in snapshot.children) {
       Map item = child.value as Map;
       StyleEvent.styles.add(StyleModel.fromJson(item));
+    }
+    return Future.value(true);
+  } else {
+    return Future.value(false);
+  }
+}
+
+Future<bool> getColors() async {
+  final ref = FirebaseDatabase.instance.ref();
+  final snapshot = await ref.child('colors').get();
+  if (snapshot.exists) {
+    for (final child in snapshot.children) {
+      Map item = child.value as Map;
+      StyleEvent.colors.add(ColorModel.fromJson(item));
     }
     return Future.value(true);
   } else {
@@ -67,14 +84,14 @@ class AddStyleEvent extends StyleEvent {
         description: style.description,
         styleTime: style.styleTime,
         stylePrice: style.stylePrice,
-        styleType: style.styleType,
+        // styleType: style.styleType,
         imageURL: url,
       );
       await dataRef.update(styleModel.toJson());
       StyleEvent.styles.add(styleModel);
       yield AddStyleSuccessState();
       await Future.delayed(Duration(milliseconds: 100));
-      yield InStyleState(StyleEvent.styles);
+      yield InStyleState(StyleEvent.styles, StyleEvent.colors);
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
       yield ErrorStyleState(_.toString());
@@ -105,14 +122,14 @@ class UpdateStyleEvent extends StyleEvent {
         description: style.description,
         styleTime: style.styleTime,
         stylePrice: style.stylePrice,
-        styleType: style.styleType,
+        // styleType: style.styleType,
         imageURL: url,
       );
       dataRef.child(style.styleName ?? "").remove();
       await dataRef.update(styleModel.toJson());
       yield UpdateStyleSuccessState();
       await Future.delayed(Duration(milliseconds: 100));
-      yield InStyleState(StyleEvent.styles);
+      yield InStyleState(StyleEvent.styles, StyleEvent.colors);
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
       yield ErrorStyleState(_.toString());
@@ -131,7 +148,7 @@ class DeleteStyleEvent extends StyleEvent {
       dataRef.child(style.styleName!).remove();
       yield DeleteStyleSuccessState();
       await Future.delayed(Duration(seconds: 1));
-      yield InStyleState(StyleEvent.styles);
+      yield InStyleState(StyleEvent.styles, StyleEvent.colors);
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadStyleEvent', error: _, stackTrace: stackTrace);
       yield ErrorStyleState(_.toString());

@@ -37,11 +37,15 @@ class _StylePageState extends State<StylePage> {
               ),
             ),
           ],
-          body: TabBarView(
-            children: [
-              StyleScreen(styleBloc: _styleBloc),
-              ColorScreen(styleBloc: _styleBloc),
-            ],
+          body: MediaQuery.removePadding(
+            removeTop: true,
+            context: context,
+            child: TabBarView(
+              children: [
+                StyleScreen(styleBloc: _styleBloc),
+                ColorScreen(styleBloc: _styleBloc),
+              ],
+            ),
           ),
         ),
         floatingActionButton: FloatingActionButton(

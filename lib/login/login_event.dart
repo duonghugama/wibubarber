@@ -48,7 +48,7 @@ class SignInEvent extends LoginEvent {
                     await UserLocalStorage.setname(value.docs[0].data()['name'].toString()),
                     await UserLocalStorage.setUsername(username),
                     await UserLocalStorage.setPassword(password),
-                    await UserLocalStorage.setRoles(List.castFrom(value.docs[0].data()['permission']))
+                    // await UserLocalStorage.setRoles(List.castFrom(value.docs[0].data()['permission']))
                   }
               },
             );
@@ -57,11 +57,11 @@ class SignInEvent extends LoginEvent {
       }
       final userLogin = FirebaseAuth.instance.currentUser ?? "";
       String name = await UserLocalStorage.getname();
-      List<String> roles = await UserLocalStorage.getRoles();
+      // List<String> roles = await UserLocalStorage.getRoles();
 
       if (userLogin != "") {
         yield InLoginState(
-            UserModel(username, FirebaseAuth.instance.currentUser!.email.toString(), roles, name));
+            UserModel(username, FirebaseAuth.instance.currentUser!.email.toString(), [], name));
         await Future.delayed(Duration(seconds: 1));
         yield LoginSuccessState();
       }
@@ -82,11 +82,13 @@ class LoadLoginEvent extends LoginEvent {
         String username = await UserLocalStorage.getUsername();
         String name = await UserLocalStorage.getname();
         // List<String> roles = await UserLocalStorage.getRoles();
+        // List<String> roles = await UserLocalStorage.getRoles();
 
+        yield LoginSuccessState();
+        await Future.delayed(Duration(seconds: 1));
         yield InLoginState(
           UserModel(username, auth.currentUser!.email ?? "", [], name),
         );
-        yield LoginSuccessState();
       } else {
         yield InLoginState(null);
       }

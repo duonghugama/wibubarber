@@ -21,6 +21,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _homeBloc = HomeBloc(UnHomeState());
+  final _loginBloc = LoginBloc(UnLoginState());
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   DateTime? currentBackPressTime;
   String username = "";
@@ -29,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _loginBloc.add(LoadLoginEvent());
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getUserData();
     });
@@ -61,73 +63,75 @@ class _HomePageState extends State<HomePage> {
       return Future.value(true);
     }
 
-    return BlocConsumer<LoginBloc, LoginState>(
-      listener: (context, state) {
-        if (state is LogoutState) {
-          Navigator.of(context).pushNamedAndRemoveUntil(LoginPage.routeName, (Route<dynamic> route) => false);
-        }
-      },
-      builder: (context, state) {
-        if (state is InLoginState)
-          return WillPopScope(
-            onWillPop: onWillPop,
-            child: Scaffold(
-              key: scaffoldKey,
-              appBar: AppBar(
-                automaticallyImplyLeading: false,
-                leading: IconButton(
-                  tooltip: 'Menu',
-                  icon: Icon(Icons.menu),
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            tooltip: 'Menu',
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              scaffoldKey.currentState?.openDrawer();
+            },
+          ),
+          title: Text('Home'),
+        ),
+        body: HomeScreen(homeBloc: _homeBloc),
+        bottomNavigationBar: BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          color: Colors.blue,
+          child: IconTheme(
+            data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  tooltip: 'Favorite',
+                  icon: Icon(Icons.favorite),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  tooltip: 'Lịch sử',
+                  icon: Icon(Icons.history),
+                  onPressed: () {},
+                ),
+                Spacer(),
+                IconButton(
+                  tooltip: 'Barber',
+                  icon: Image.asset("lib/asset/barber.png", color: Colors.white),
                   onPressed: () {
-                    scaffoldKey.currentState?.openDrawer();
+                    Navigator.of(context).pushNamed(BarberPage.routeName);
                   },
                 ),
-                title: Text('Home'),
-              ),
-              body: HomeScreen(homeBloc: _homeBloc),
-              bottomNavigationBar: BottomAppBar(
-                shape: CircularNotchedRectangle(),
-                color: Colors.blue,
-                child: IconTheme(
-                  data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-                  child: Row(
-                    children: <Widget>[
-                      IconButton(
-                        tooltip: 'Favorite',
-                        icon: Icon(Icons.favorite),
-                        onPressed: () {},
-                      ),
-                      IconButton(
-                        tooltip: 'Lịch sử',
-                        icon: Icon(Icons.history),
-                        onPressed: () {},
-                      ),
-                      Spacer(),
-                      IconButton(
-                        tooltip: 'Barber',
-                        icon: Image.asset("lib/asset/barber.png", color: Colors.white),
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(BarberPage.routeName);
-                        },
-                      ),
-                      IconButton(
-                        tooltip: 'Kiểu tóc',
-                        icon: Image.asset("lib/asset/razor.png", color: Colors.white),
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(StylePage.routeName);
-                        },
-                      ),
-                    ],
-                  ),
+                IconButton(
+                  tooltip: 'Kiểu tóc',
+                  icon: Image.asset("lib/asset/razor.png", color: Colors.white),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(StylePage.routeName);
+                  },
                 ),
-              ),
-              floatingActionButton: FloatingActionButton(
-                child: Icon(FontAwesome5.calendar_check),
-                onPressed: () {
-                  Navigator.of(context).pushNamed(SchedulePage.routeName);
-                },
-              ),
-              drawer: Drawer(
+              ],
+            ),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(FontAwesome5.calendar_check),
+          onPressed: () {
+            Navigator.of(context).pushNamed(SchedulePage.routeName);
+          },
+        ),
+        drawer: BlocConsumer<LoginBloc, LoginState>(
+          bloc: _loginBloc,
+          listener: (context, state) {
+            if (state is LogoutState) {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(LoginPage.routeName, (Route<dynamic> route) => false);
+            }
+          },
+          builder: (context, state) {
+            if (state is InLoginState)
+              return Drawer(
                 child: Column(
                   children: [
                     DrawerHeader(
@@ -135,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     ListTile(
                       leading: FlutterLogo(size: 20),
-                      title: Text(name),
+                      title: Text(state.user?.name ?? ""),
                     ),
                     ListTile(
                       title: Text("Đăng ký làm thợ"),
@@ -144,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => QRScreen(
-                              username: username,
+                              username: state.user?.username ?? "",
                               email: FirebaseAuth.instance.currentUser?.email.toString() ?? "",
                             ),
                           ),
@@ -155,20 +159,34 @@ class _HomePageState extends State<HomePage> {
                     ListTile(
                       title: Text("Đăng xuất"),
                       onTap: () {
-                        BlocProvider.of<LoginBloc>(context).add(LogoutEvent());
+                        _loginBloc.add(LogoutEvent());
                       },
                     ),
                   ],
                 ),
-              ),
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-            ),
-          );
-        return Center(
-          child: Text("Lỗi State"),
-        );
-      },
+              );
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      ),
     );
+    // return BlocConsumer<LoginBloc, LoginState>(
+    //   bloc: _loginBloc,
+    //   listener: (context, state) {
+    //     if (state is LogoutState) {
+    //       Navigator.of(context).pushNamedAndRemoveUntil(LoginPage.routeName, (Route<dynamic> route) => false);
+    //     }
+    //   },
+    //   builder: (context, state) {
+    //     if (state is InLoginState)
+    //       return Center(
+    //         child: CircularProgressIndicator(),
+    //       );
+    //   },
+    // );
   }
 }
 
@@ -181,8 +199,9 @@ class QRScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: Center(
-        child: QrImage(data: "$username, $email"),
+        child: QrImage(data: "$username,$email"),
       ),
     );
   }

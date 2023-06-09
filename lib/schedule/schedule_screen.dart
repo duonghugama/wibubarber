@@ -19,6 +19,7 @@ class ScheduleScreen extends StatefulWidget {
 
 class ScheduleScreenState extends State<ScheduleScreen> {
   ScheduleScreenState();
+  int _index = 0;
   @override
   void initState() {
     super.initState();
@@ -60,7 +61,6 @@ class ScheduleScreenState extends State<ScheduleScreen> {
           ));
         }
         if (state is InScheduleState) {
-          int _index = 0;
           return Stepper(
             controlsBuilder: (context, details) => SizedBox.shrink(),
             currentStep: _index,
@@ -88,11 +88,9 @@ class ScheduleScreenState extends State<ScheduleScreen> {
                 title: Text("Chọn gói dịch vụ"),
                 content: InkWell(
                   onTap: () {
-                    // Navigator.of(context).push(
-                    //   MaterialPageRoute(
-                    //     builder: (context) => Stylr
-                    //   ),
-                    // );
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => ServicePickScreen(bloc: widget._scheduleBloc)),
+                    );
                   },
                   child: InputDecorator(
                     decoration: InputDecoration(

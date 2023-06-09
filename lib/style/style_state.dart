@@ -19,11 +19,11 @@ class UnStyleState extends StyleState {
 /// Initialized
 class InStyleState extends StyleState {
   final List<StyleModel>? styles;
-
-  InStyleState(this.styles);
+  final List<ColorModel>? colors;
+  InStyleState(this.styles, this.colors);
 
   @override
-  List<Object?> get props => [styles];
+  List<Object?> get props => [styles, colors];
 }
 
 class AddStyleSuccessState extends StyleState {

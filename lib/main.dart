@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<LoginBloc>(create: (context) => LoginBloc(InLoginState(null))),
         BlocProvider<HomeBloc>(create: (context) => HomeBloc(InHomeState())),
-        BlocProvider<StyleBloc>(create: (context) => StyleBloc(InStyleState(null))),
+        BlocProvider<StyleBloc>(create: (context) => StyleBloc(InStyleState(null, null))),
         BlocProvider<BarberBloc>(create: (context) => BarberBloc(InBarberState([]))),
         BlocProvider<ScheduleBloc>(create: (context) => ScheduleBloc(InScheduleState([], null, null))),
       ],

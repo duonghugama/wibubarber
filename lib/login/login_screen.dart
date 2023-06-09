@@ -10,10 +10,10 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({
     required LoginBloc loginBloc,
     Key? key,
-  })  : _loginBloc = loginBloc,
+  })  : loginBloc = loginBloc,
         super(key: key);
 
-  final LoginBloc _loginBloc;
+  final LoginBloc loginBloc;
 
   @override
   LoginScreenState createState() {
@@ -40,7 +40,7 @@ class LoginScreenState extends State<LoginScreen> {
     TextEditingController userNameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     return BlocConsumer<LoginBloc, LoginState>(
-        bloc: widget._loginBloc,
+        bloc: widget.loginBloc,
         listener: (context, state) {
           if (state is LoginSuccessState) {
             Navigator.of(context).pushNamed(
@@ -68,7 +68,7 @@ class LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     child: Text("Load lại"),
                     onPressed: () {
-                      widget._loginBloc.add(LoadLoginEvent());
+                      widget.loginBloc.add(LoadLoginEvent());
                     },
                   ),
                 ),
@@ -113,11 +113,11 @@ class LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: () {
                         if (EmailValidator.validate(userNameController.text)) {
-                          widget._loginBloc.add(
+                          widget.loginBloc.add(
                             SignInEvent("", userNameController.text, passwordController.text),
                           );
                         } else {
-                          widget._loginBloc.add(
+                          widget.loginBloc.add(
                             SignInEvent(userNameController.text, "", passwordController.text),
                           );
                         }
@@ -139,7 +139,7 @@ class LoginScreenState extends State<LoginScreen> {
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () => Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => SignUpScreen(loginBloc: widget._loginBloc),
+                                          builder: (context) => SignUpScreen(loginBloc: widget.loginBloc),
                                         ),
                                       ),
                               ),
@@ -160,6 +160,6 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   void _load() {
-    widget._loginBloc.add(LoadLoginEvent());
+    widget.loginBloc.add(LoadLoginEvent());
   }
 }
