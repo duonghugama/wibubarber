@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wibubarber/model/style_model.dart';
 import 'package:wibubarber/style/index.dart';
 import 'package:intl/intl.dart';
-
-import 'add_style_screen.dart';
 
 class StyleScreen extends StatefulWidget {
   const StyleScreen({
@@ -25,9 +21,9 @@ class StyleScreen extends StatefulWidget {
 
 class StyleScreenState extends State<StyleScreen> {
   StyleScreenState();
-// Initial Selected Value
+  // Initial Selected Value
   String dropdownvalue = 'Kiểu tóc';
-  final f = NumberFormat.currency(locale: "vi");
+  final f = NumberFormat.currency(locale: "vi", symbol: "K");
   // List of items in our dropdown menu
   var items = [
     'Kiểu tóc',
@@ -47,9 +43,10 @@ class StyleScreenState extends State<StyleScreen> {
 
   Widget image(StyleModel? model) {
     if (model?.imageURL != null && model?.imageURL != "") {
-      return Image.network(
-        model!.imageURL!,
-        fit: BoxFit.cover,
+      return FadeInImage.assetNetwork(
+        image: model!.imageURL!,
+        placeholder: 'lib/asset/loading-azurlane.gif',
+        fit: BoxFit.fill,
       );
     }
     return Container(
@@ -57,8 +54,6 @@ class StyleScreenState extends State<StyleScreen> {
       child: Center(
         child: Image.asset(
           "lib/asset/no-photos.png",
-          width: 100,
-          height: 100,
         ),
       ),
     );
@@ -107,12 +102,10 @@ class StyleScreenState extends State<StyleScreen> {
         if (currentState is InStyleState) {
           if (currentState.styles != null) {
             return GridView.builder(
-              gridDelegate:
-                  SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
               itemCount: currentState.styles?.length ?? 0,
               itemBuilder: (context, index) {
-                List<String> timeParts =
-                    currentState.styles![index].styleTime!.split(':');
+                List<String> timeParts = currentState.styles![index].styleTime!.split(':');
                 Duration duration = Duration(
                   hours: int.parse(timeParts[0]),
                   minutes: int.parse(timeParts[1]),
@@ -138,29 +131,29 @@ class StyleScreenState extends State<StyleScreen> {
                     child: Stack(
                       children: [
                         image(currentState.styles![index]),
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                // Colors.black.withAlpha(0),
-                                Colors.black12,
-                                Colors.black26,
-                                Colors.black.withAlpha(0),
-                              ],
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                "${duration.inMinutes} phút",
-                                style: yellowText,
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //     gradient: LinearGradient(
+                        //       begin: Alignment.topCenter,
+                        //       end: Alignment.bottomCenter,
+                        //       colors: [
+                        //         //Colors.black.withAlpha(0),
+                        //         Colors.black12,
+                        //         Colors.black26,
+                        //         Colors.black.withAlpha(0),
+                        //       ],
+                        //     ),
+                        //   ),
+                        //   child: Row(
+                        //     mainAxisAlignment: MainAxisAlignment.end,
+                        //     children: [
+                        //       Text(
+                        //         "",
+                        //         style: whiteText,
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                         Positioned(
                           bottom: 1,
                           right: 0,
@@ -172,15 +165,29 @@ class StyleScreenState extends State<StyleScreen> {
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.black.withAlpha(0),
-                                  Colors.black26,
-                                  Colors.black12,
-                                  Colors.black.withAlpha(0),
+                                  Colors.black45,
+                                  Colors.black45,
+                                  Colors.black45,
+                                  // Colors.black12,
                                 ],
                               ),
                             ),
-                            child: Text(
-                              "${currentState.styles![index].styleName ?? ""} - ${f.format(currentState.styles![index].stylePrice)}",
-                              style: whiteText,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "${currentState.styles![index].styleName ?? ""} - ${duration.inMinutes} phút",
+                                  style: whiteText,
+                                ),
+                                Text(
+                                  currentState.styles?[index].description ?? "",
+                                  style: whiteText,
+                                ),
+                                Text(
+                                  "Giá: ${f.format(currentState.styles![index].stylePrice! / 1000)}",
+                                  style: whiteText,
+                                ),
+                              ],
                             ),
                           ),
                         ),

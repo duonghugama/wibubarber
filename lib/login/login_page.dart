@@ -9,12 +9,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _loginBloc = LoginBloc(UnLoginState());
+  final loginBloc = LoginBloc(UnLoginState());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: LoginScreen(loginBloc: _loginBloc),
+      body: LoginScreen(loginBloc: loginBloc),
     );
   }
 }

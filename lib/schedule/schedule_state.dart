@@ -16,7 +16,13 @@ class UnScheduleState extends ScheduleState {
 }
 
 /// Initialized
-class InScheduleState extends ScheduleState {}
+class InScheduleState extends ScheduleState {
+  final List<String> servicePackage;
+  final String? barberID;
+  final DateTime? schedule;
+
+  InScheduleState(this.servicePackage, this.barberID, this.schedule);
+}
 
 class ErrorScheduleState extends ScheduleState {
   ErrorScheduleState(this.errorMessage);

@@ -19,7 +19,6 @@ class ScheduleScreen extends StatefulWidget {
 
 class ScheduleScreenState extends State<ScheduleScreen> {
   ScheduleScreenState();
-  int _index = 0;
   @override
   void initState() {
     super.initState();
@@ -37,19 +36,19 @@ class ScheduleScreenState extends State<ScheduleScreen> {
       bloc: widget._scheduleBloc,
       builder: (
         BuildContext context,
-        ScheduleState currentState,
+        ScheduleState state,
       ) {
-        if (currentState is UnScheduleState) {
+        if (state is UnScheduleState) {
           return Center(
             child: CircularProgressIndicator(),
           );
         }
-        if (currentState is ErrorScheduleState) {
+        if (state is ErrorScheduleState) {
           return Center(
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(currentState.errorMessage),
+              Text(state.errorMessage),
               Padding(
                 padding: const EdgeInsets.only(top: 32.0),
                 child: ElevatedButton(
@@ -60,23 +59,25 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             ],
           ));
         }
-        if (currentState is InScheduleState) {
+        if (state is InScheduleState) {
+          int _index = 0;
           return Stepper(
+            controlsBuilder: (context, details) => SizedBox.shrink(),
             currentStep: _index,
-            onStepCancel: () {
-              if (_index > 0) {
-                setState(() {
-                  _index -= 1;
-                });
-              }
-            },
-            onStepContinue: () {
-              if (_index <= 0) {
-                setState(() {
-                  _index += 1;
-                });
-              }
-            },
+            // onStepCancel: () {
+            //   if (_index > 0) {
+            //     setState(() {
+            //       _index -= 1;
+            //     });
+            //   }
+            // },
+            // onStepContinue: () {
+            //   if (_index <= 0) {
+            //     setState(() {
+            //       _index += 1;
+            //     });
+            //   }
+            // },
             onStepTapped: (int index) {
               setState(() {
                 _index = index;
@@ -85,10 +86,26 @@ class ScheduleScreenState extends State<ScheduleScreen> {
             steps: [
               Step(
                 title: Text("Chọn gói dịch vụ"),
-                content: GestureDetector(
+                content: InkWell(
+                  onTap: () {
+                    // Navigator.of(context).push(
+                    //   MaterialPageRoute(
+                    //     builder: (context) => Stylr
+                    //   ),
+                    // );
+                  },
                   child: InputDecorator(
-                    decoration: InputDecoration(border: OutlineInputBorder()),
-                    child: Text("data"),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      prefixIcon: Icon(Icons.cut),
+                      suffixIcon: Icon(Icons.arrow_forward_ios),
+                    ),
+                    child: Text(
+                      state.servicePackage.isNotEmpty
+                          ? "Đã có ${state.servicePackage.length} dịch vụ đã chọn"
+                          : "Chọn dịch vụ",
+                    ),
                   ),
                 ),
               ),

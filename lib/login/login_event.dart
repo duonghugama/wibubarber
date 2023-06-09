@@ -3,12 +3,16 @@ import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wibubarber/login/index.dart';
 import 'package:meta/meta.dart';
 import 'package:wibubarber/model/user_model.dart';
+import 'package:wibubarber/userlocalstorage.dart';
 
 @immutable
 abstract class LoginEvent {
+  static String username = "";
+  static List<String> roles = [];
   Stream<LoginState> applyAsync({LoginState currentState, LoginBloc bloc});
 }
 
@@ -40,7 +44,11 @@ class SignInEvent extends LoginEvent {
                 if (value.size > 0)
                   {
                     await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: value.docs[0].data()['email'].toString(), password: password)
+                        email: value.docs[0].data()['email'].toString(), password: password),
+                    await UserLocalStorage.setname(value.docs[0].data()['name'].toString()),
+                    await UserLocalStorage.setUsername(username),
+                    await UserLocalStorage.setPassword(password),
+                    await UserLocalStorage.setRoles(List.castFrom(value.docs[0].data()['permission']))
                   }
               },
             );
@@ -48,8 +56,13 @@ class SignInEvent extends LoginEvent {
         await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
       }
       final userLogin = FirebaseAuth.instance.currentUser ?? "";
+      String name = await UserLocalStorage.getname();
+      List<String> roles = await UserLocalStorage.getRoles();
+
       if (userLogin != "") {
-        yield InLoginState(UserModel(username, email, null));
+        yield InLoginState(
+            UserModel(username, FirebaseAuth.instance.currentUser!.email.toString(), roles, name));
+        await Future.delayed(Duration(seconds: 1));
         yield LoginSuccessState();
       }
     } catch (_, stackTrace) {
@@ -66,8 +79,12 @@ class LoadLoginEvent extends LoginEvent {
       final FirebaseAuth auth = FirebaseAuth.instance;
       // yield UnLoginState();
       if (auth.currentUser != null) {
+        String username = await UserLocalStorage.getUsername();
+        String name = await UserLocalStorage.getname();
+        // List<String> roles = await UserLocalStorage.getRoles();
+
         yield InLoginState(
-          UserModel(auth.currentUser!.uid, auth.currentUser!.email ?? "", null),
+          UserModel(username, auth.currentUser!.email ?? "", [], name),
         );
         yield LoginSuccessState();
       } else {
@@ -106,11 +123,7 @@ class SignUpEvent extends LoginEvent {
     try {
       FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       final docUser = FirebaseFirestore.instance.collection('users').doc();
-      final user = UserModel(
-        username,
-        email,
-        ["Customer", "Admin"],
-      );
+      final user = UserModel(username, email, ["Customer"], "");
       await docUser.set(user.toJson());
       yield CreateUserSuccessState(email);
     } catch (_, stackTrace) {

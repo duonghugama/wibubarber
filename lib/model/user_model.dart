@@ -4,10 +4,12 @@ class UserModel extends Equatable {
   final String username;
   final String email;
   final List<String>? permission;
-  UserModel(this.username, this.email, this.permission);
+  final String name;
+  UserModel(this.username, this.email, this.permission, this.name);
 
   @override
   List<Object?> get props => [username, email];
 
-  Map<String, dynamic> toJson() => {'username': username, 'email': email, 'permission': permission};
+  Map<String, dynamic> toJson() =>
+      {'username': username, 'email': email, 'permission': permission, 'name': name};
 }

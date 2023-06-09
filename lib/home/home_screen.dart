@@ -108,16 +108,6 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    // RawMaterialButton(
-                    //   shape: CircleBorder(),
-                    //   onPressed: () {},
-                    //   child: Padding(
-                    //     padding: const EdgeInsets.all(10),
-                    //     child: Column(
-                    //       children: [Icon(Typicons.scissors), Text("Bí kíp")],
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
                 Container(

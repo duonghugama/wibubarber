@@ -384,6 +384,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  localstorage:
+    dependency: "direct main"
+    description:
+      name: localstorage
+      sha256: "1b5304491c85250b90807e0e2b3a6217d2739caea4871b820d42782572f880f4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.1+2"
   matcher:
     dependency: transitive
     description:
@@ -613,6 +621,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  vertical_tab_bar_view:
+    dependency: "direct main"
+    description:
+      name: vertical_tab_bar_view
+      sha256: a15cde60f75f8c27e81afc65ce08c262f412c90759ee16794478be0686a161b2
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1"
   win32:
     dependency: transitive
     description:

@@ -31,5 +31,7 @@ linter:
     use_key_in_widget_constructors: false
     library_private_types_in_public_api: false
     depend_on_referenced_packages: false
+    curly_braces_in_flow_control_structures: false
+    no_leading_underscores_for_local_identifiers: false
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options

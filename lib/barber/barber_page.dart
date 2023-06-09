@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:wibubarber/barber/index.dart';
@@ -47,6 +46,7 @@ class _QRScanningPageState extends State<QRScanningPage> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? result;
   QRViewController? controller;
+  List<String> data = [];
   @override
   void reassemble() {
     super.reassemble();
@@ -70,6 +70,9 @@ class _QRScanningPageState extends State<QRScanningPage> {
       setState(() {
         result = scanData;
       });
+      if (result?.code != null) {
+        showAlertDialog(context, result!.code!.split(',')[1].toString());
+      }
     });
   }
 
@@ -105,4 +108,36 @@ class _QRScanningPageState extends State<QRScanningPage> {
       ),
     );
   }
+}
+
+showAlertDialog(BuildContext context, String username) {
+  // set up the buttons
+  Widget cancelButton = TextButton(
+    child: Text("Không"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = TextButton(
+    child: Text("Xác nhận"),
+    onPressed: () {},
+  );
+
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: Text("Thông báo"),
+    content: Text("Xác nhận $username làm thợ của cửa hàng?"),
+    actions: [
+      cancelButton,
+      continueButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

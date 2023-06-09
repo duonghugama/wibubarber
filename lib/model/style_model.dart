@@ -7,7 +7,8 @@ class StyleModel extends Equatable {
   final int? stylePrice;
   final String? description;
   final String? imageURL;
-  StyleModel({this.styleName, this.styleType, this.styleTime, this.stylePrice, this.description, this.imageURL});
+  StyleModel(
+      {this.styleName, this.styleType, this.styleTime, this.stylePrice, this.description, this.imageURL});
 
   @override
   List<Object?> get props => [];
@@ -31,5 +32,32 @@ class StyleModel extends Equatable {
           'styleName': styleName,
           'imageURL': imageURL ?? ""
         }
+      };
+}
+
+class ColorStyle {
+  final String? hex;
+  int? price;
+  String? time;
+  final String name;
+
+  ColorStyle({this.hex, this.price, this.time, required this.name});
+
+  factory ColorStyle.fromJson(Map<String, dynamic> json) {
+    return ColorStyle(
+      name: json['name'],
+      hex: json['hex'],
+      price: json['price'],
+      time: json['time'],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        name: {
+          'hex': hex,
+          'name': name,
+          'price': price,
+          'time': time,
+        },
       };
 }

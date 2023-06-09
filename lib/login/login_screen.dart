@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wibubarber/home/home_page.dart';
 import 'package:wibubarber/login/index.dart';
+import 'package:wibubarber/login/signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -123,17 +124,6 @@ class LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text("Đăng nhập"),
                     ),
-                    // ElevatedButton.icon(
-                    //   onPressed: () {
-                    //     Navigator.of(context).push(
-                    //       MaterialPageRoute(
-                    //         builder: (context) => SignUpScreen(loginBloc: widget._loginBloc),
-                    //       ),
-                    //     );
-                    //   },
-                    //   icon: Icon(Icons.person_add),
-                    //   label: Text("Đăng ký"),
-                    // ),
                     Row(
                       children: [
                         RichText(
@@ -149,7 +139,7 @@ class LoginScreenState extends State<LoginScreen> {
                                 recognizer: TapGestureRecognizer()
                                   ..onTap = () => Navigator.of(context).push(
                                         MaterialPageRoute(
-                                          builder: (context) => HomePage(),
+                                          builder: (context) => SignUpScreen(loginBloc: widget._loginBloc),
                                         ),
                                       ),
                               ),

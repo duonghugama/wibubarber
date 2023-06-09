@@ -22,7 +22,7 @@ class LoadScheduleEvent extends ScheduleEvent {
     try {
       yield UnScheduleState();
       // await Future.delayed(const Duration(seconds: 1));
-      yield InScheduleState();
+      yield InScheduleState([], null, null);
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadScheduleEvent', error: _, stackTrace: stackTrace);
       yield ErrorScheduleState(_.toString());
