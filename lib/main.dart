@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<HomeBloc>(create: (context) => HomeBloc(InHomeState())),
         BlocProvider<StyleBloc>(create: (context) => StyleBloc(InStyleState(null, null))),
         BlocProvider<BarberBloc>(create: (context) => BarberBloc(InBarberState([]))),
-        BlocProvider<ScheduleBloc>(create: (context) => ScheduleBloc(InScheduleState([], null, null))),
+        BlocProvider<ScheduleBloc>(create: (context) => ScheduleBloc(InScheduleState("", "", null, []))),
       ],
       child: BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
         return MaterialApp(

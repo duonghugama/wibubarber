@@ -84,11 +84,11 @@ class AddStyleEvent extends StyleEvent {
         description: style.description,
         styleTime: style.styleTime,
         stylePrice: style.stylePrice,
-        // styleType: style.styleType,
         imageURL: url,
       );
+      StyleEvent.styles.clear();
       await dataRef.update(styleModel.toJson());
-      StyleEvent.styles.add(styleModel);
+      await getStyle();
       yield AddStyleSuccessState();
       await Future.delayed(Duration(milliseconds: 100));
       yield InStyleState(StyleEvent.styles, StyleEvent.colors);
@@ -122,11 +122,12 @@ class UpdateStyleEvent extends StyleEvent {
         description: style.description,
         styleTime: style.styleTime,
         stylePrice: style.stylePrice,
-        // styleType: style.styleType,
         imageURL: url,
       );
-      dataRef.child(style.styleName ?? "").remove();
+      // dataRef.child(style.styleName ?? "").remove();
+      StyleEvent.styles.clear();
       await dataRef.update(styleModel.toJson());
+      await getStyle();
       yield UpdateStyleSuccessState();
       await Future.delayed(Duration(milliseconds: 100));
       yield InStyleState(StyleEvent.styles, StyleEvent.colors);
@@ -145,7 +146,9 @@ class DeleteStyleEvent extends StyleEvent {
   Stream<StyleState> applyAsync({StyleState? currentState, StyleBloc? bloc}) async* {
     try {
       DatabaseReference dataRef = FirebaseDatabase.instance.ref("style");
-      dataRef.child(style.styleName!).remove();
+      StyleEvent.styles.clear();
+      await dataRef.child(style.styleName!).remove();
+      await getStyle();
       yield DeleteStyleSuccessState();
       await Future.delayed(Duration(seconds: 1));
       yield InStyleState(StyleEvent.styles, StyleEvent.colors);

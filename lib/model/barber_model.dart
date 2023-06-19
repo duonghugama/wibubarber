@@ -5,8 +5,8 @@ class BarberModel extends Equatable {
   final String? name;
   final String? exp;
   final String? description;
-
-  BarberModel({this.email, this.name, this.exp, this.description});
+  final String? avatarURL;
+  BarberModel({this.avatarURL, this.email, this.name, this.exp, this.description});
 
   @override
   List<Object?> get props => [];
@@ -18,6 +18,7 @@ class BarberModel extends Equatable {
         'exp': exp,
       };
   factory BarberModel.fromJson(Map json) => BarberModel(
+        avatarURL: json["avatarURL"],
         email: json['email'],
         description: json['description'],
         exp: json['exp'],

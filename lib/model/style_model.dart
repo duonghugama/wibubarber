@@ -32,12 +32,12 @@ class StyleModel extends Equatable {
 }
 
 class ColorModel {
-  final String? hex;
-  int? price;
-  String? time;
+  final String hex;
+  int price;
+  String time;
   final String name;
 
-  ColorModel({this.hex, this.price, this.time, required this.name});
+  ColorModel({required this.hex, required this.price, required this.time, required this.name});
 
   factory ColorModel.fromJson(Map json) {
     return ColorModel(

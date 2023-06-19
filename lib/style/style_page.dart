@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vertical_tab_bar_view/vertical_tab_bar_view.dart';
-import 'package:wibubarber/style/add_style_screen.dart';
 import 'package:wibubarber/style/index.dart';
 
 class StylePage extends StatefulWidget {
@@ -12,6 +10,11 @@ class StylePage extends StatefulWidget {
 
 class _StylePageState extends State<StylePage> {
   final _styleBloc = StyleBloc(UnStyleState());
+  int index = 0;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +37,11 @@ class _StylePageState extends State<StylePage> {
                     text: "Màu tóc",
                   ),
                 ],
+                onTap: (value) {
+                  setState(() {
+                    index = value;
+                  });
+                },
               ),
             ),
           ],
@@ -51,7 +59,10 @@ class _StylePageState extends State<StylePage> {
         floatingActionButton: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => AddStyleScreen()));
+            if (index == 0)
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => StyleDetailScreen()));
+            else
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Chưa có tính năng này")));
           },
         ),
       ),

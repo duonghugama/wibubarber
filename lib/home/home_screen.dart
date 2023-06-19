@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:wibubarber/home/index.dart';
+import 'package:wibubarber/login/index.dart';
+import 'package:wibubarber/schedule/schedule_page.dart';
+import 'package:wibubarber/style/style_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -70,7 +73,9 @@ class HomeScreenState extends State<HomeScreen> {
                   children: [
                     RawMaterialButton(
                       shape: CircleBorder(),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(SchedulePage.routeName);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: Column(
@@ -78,19 +83,21 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
+                    // RawMaterialButton(
+                    //   shape: CircleBorder(),
+                    //   onPressed: () {},
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(10),
+                    //     child: Column(
+                    //       children: [Icon(FontAwesome5.history), Text("Lịch sử")],
+                    //     ),
+                    //   ),
+                    // ),
                     RawMaterialButton(
                       shape: CircleBorder(),
-                      onPressed: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [Icon(FontAwesome5.history), Text("Lịch sử")],
-                        ),
-                      ),
-                    ),
-                    RawMaterialButton(
-                      shape: CircleBorder(),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(StylePage.routeName);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: Column(
@@ -98,16 +105,29 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    RawMaterialButton(
-                      shape: CircleBorder(),
-                      onPressed: () {},
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          children: [Icon(FontAwesome5.tags), Text("Ưu đãi")],
-                        ),
-                      ),
-                    ),
+                    // if (LoginEvent.permission.contains("Barber"))
+                    //   RawMaterialButton(
+                    //     shape: CircleBorder(),
+                    //     onPressed: () {
+                    //       Navigator.of(context).pushNamed(StylePage.routeName);
+                    //     },
+                    //     child: Padding(
+                    //       padding: const EdgeInsets.all(10),
+                    //       child: Column(
+                    //         children: [Icon(FontAwesome5.list_alt), Text("Xác nhận lịch cắt tóc")],
+                    //       ),
+                    //     ),
+                    //   ),
+                    // RawMaterialButton(
+                    //   shape: CircleBorder(),
+                    //   onPressed: () {},
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.all(10),
+                    //     child: Column(
+                    //       children: [Icon(FontAwesome5.tags), Text("Ưu đãi")],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 Container(

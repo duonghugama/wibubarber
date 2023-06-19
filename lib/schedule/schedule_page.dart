@@ -15,7 +15,7 @@ class _SchedulePageState extends State<SchedulePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Schedule'),
+        title: Text("Đặt lịch"),
       ),
       body: ScheduleScreen(scheduleBloc: _scheduleBloc),
     );

@@ -28,24 +28,3 @@ class LoadHomeEvent extends HomeEvent {
     }
   }
 }
-
-// class LoadStyleEventTest extends HomeEvent {
-//   @override
-//   Stream<HomeState> applyAsync({HomeState? currentState, HomeBloc? bloc}) async* {
-//     try {
-//       yield UnHomeState();
-//       final ref = FirebaseDatabase.instance.ref();
-//       final snapshot = await ref.child('/Style').get();
-//       if (snapshot.exists) {
-//         print(snapshot.value);
-//       } else {
-//         print('No data available.');
-//       }
-//       await Future.delayed(Duration(seconds: 1));
-//       yield InHomeState();
-//     } catch (_, stackTrace) {
-//       developer.log('$_', name: 'LoadHomeEvent', error: _, stackTrace: stackTrace);
-//       yield ErrorHomeState(_.toString());
-//     }
-//   }
-// }

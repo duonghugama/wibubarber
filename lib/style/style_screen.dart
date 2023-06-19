@@ -24,12 +24,6 @@ class StyleScreenState extends State<StyleScreen> {
   // Initial Selected Value
   String dropdownvalue = 'Kiểu tóc';
   final f = NumberFormat.currency(locale: "vi", symbol: "K");
-  // List of items in our dropdown menu
-  var items = [
-    'Kiểu tóc',
-    'Kiểu râu',
-    'Màu tóc',
-  ];
   @override
   void initState() {
     super.initState();
@@ -105,7 +99,7 @@ class StyleScreenState extends State<StyleScreen> {
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio:
-                    MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 1.8),
+                    MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / 1.6),
               ),
               itemCount: currentState.styles?.length ?? 0,
               itemBuilder: (context, index) {
@@ -119,7 +113,7 @@ class StyleScreenState extends State<StyleScreen> {
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => AddStyleScreen(
+                        builder: (context) => StyleDetailScreen(
                           styleModel: currentState.styles![index],
                         ),
                       ),
@@ -133,6 +127,7 @@ class StyleScreenState extends State<StyleScreen> {
                     ),
                     elevation: 2,
                     child: Stack(
+                      fit: StackFit.expand,
                       children: [
                         image(currentState.styles![index]),
                         Positioned(

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:wibubarber/barber/barber_detail_screen.dart';
 import 'package:wibubarber/barber/index.dart';
 
 class BarberPage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _BarberPageState extends State<BarberPage> {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => QRScanningPage(),
+              builder: (context) => QRScanningPage(barberBloc: _barberBloc),
             ),
           );
         },
@@ -36,7 +37,12 @@ class _BarberPageState extends State<BarberPage> {
 }
 
 class QRScanningPage extends StatefulWidget {
-  const QRScanningPage({super.key});
+  const QRScanningPage({
+    required BarberBloc barberBloc,
+    Key? key,
+  })  : _barberBloc = barberBloc,
+        super(key: key);
+  final BarberBloc _barberBloc;
 
   @override
   State<QRScanningPage> createState() => _QRScanningPageState();
@@ -71,7 +77,14 @@ class _QRScanningPageState extends State<QRScanningPage> {
         result = scanData;
       });
       if (result?.code != null) {
-        showAlertDialog(context, result!.code!.split(',')[1].toString());
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => BarberDetailScreen(
+            barberBloc: widget._barberBloc,
+            email: result!.code!.split(',')[0].toString(),
+            name: result!.code!.split(',')[1].toString(),
+          ),
+        ));
+        // showAlertDialog(context, result!.code!.split(',')[1].toString());
       }
     });
   }
@@ -110,34 +123,34 @@ class _QRScanningPageState extends State<QRScanningPage> {
   }
 }
 
-showAlertDialog(BuildContext context, String username) {
-  // set up the buttons
-  Widget cancelButton = TextButton(
-    child: Text("Không"),
-    onPressed: () {
-      Navigator.of(context).pop();
-    },
-  );
-  Widget continueButton = TextButton(
-    child: Text("Xác nhận"),
-    onPressed: () {},
-  );
+// showAlertDialog(BuildContext context, String username) {
+//   // set up the buttons
+//   Widget cancelButton = TextButton(
+//     child: Text("Không"),
+//     onPressed: () {
+//       Navigator.of(context).pop();
+//     },
+//   );
+//   Widget continueButton = TextButton(
+//     child: Text("Xác nhận"),
+//     onPressed: () {},
+//   );
 
-  // set up the AlertDialog
-  AlertDialog alert = AlertDialog(
-    title: Text("Thông báo"),
-    content: Text("Xác nhận $username làm thợ của cửa hàng?"),
-    actions: [
-      cancelButton,
-      continueButton,
-    ],
-  );
+//   // set up the AlertDialog
+//   AlertDialog alert = AlertDialog(
+//     title: Text("Thông báo"),
+//     content: Text("Xác nhận $username làm thợ của cửa hàng?"),
+//     actions: [
+//       cancelButton,
+//       continueButton,
+//     ],
+//   );
 
-  // show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
+//   // show the dialog
+//   showDialog(
+//     context: context,
+//     builder: (BuildContext context) {
+//       return alert;
+//     },
+//   );
+// }

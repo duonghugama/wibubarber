@@ -7,15 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wibubarber/model/style_model.dart';
 import 'package:wibubarber/style/index.dart';
 
-class AddStyleScreen extends StatefulWidget {
+class StyleDetailScreen extends StatefulWidget {
   final StyleModel? styleModel;
-  AddStyleScreen({super.key, this.styleModel});
+  StyleDetailScreen({super.key, this.styleModel});
 
   @override
-  State<AddStyleScreen> createState() => _AddStyleScreenState();
+  State<StyleDetailScreen> createState() => _StyleDetailScreenState();
 }
 
-class _AddStyleScreenState extends State<AddStyleScreen> {
+class _StyleDetailScreenState extends State<StyleDetailScreen> {
   PlatformFile? pickedFile;
   TextEditingController styleNameController = TextEditingController();
   TextEditingController stylePriceController = TextEditingController();
@@ -36,7 +36,7 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
     if (widget.styleModel?.imageURL != null && widget.styleModel?.imageURL != "") {
       return Image.network(
         widget.styleModel!.imageURL!,
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
       );
     }
     return Icon(Icons.add_a_photo);
@@ -74,6 +74,13 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
           Navigator.of(context).pop();
         }
+        if (state is UpdateStyleSuccessState) {
+          final snackBar = SnackBar(
+            content: Text('Sửa ${drowdownValue.toLowerCase()} thành công'),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          Navigator.of(context).pop();
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -82,11 +89,32 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
             widget.styleModel != null
                 ? IconButton(
                     onPressed: () {
-                      if (widget.styleModel != null) {
-                        BlocProvider.of<StyleBloc>(context).add(DeleteStyleEvent(widget.styleModel!));
-                        BlocProvider.of<StyleBloc>(context).add(LoadStyleEvent());
-                        Navigator.pop(context);
-                      }
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text("Xác nhận xoá"),
+                          content: Text("Bạn có chắc xoá kiểu tóc này?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Chưa"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                if (widget.styleModel != null) {
+                                  BlocProvider.of<StyleBloc>(context)
+                                      .add(DeleteStyleEvent(widget.styleModel!));
+                                  Navigator.pop(context);
+                                }
+                                Navigator.of(context).pop();
+                              },
+                              child: Text("Đồng ý"),
+                            ),
+                          ],
+                        ),
+                      );
                     },
                     icon: Icon(Icons.delete),
                   )
@@ -216,12 +244,8 @@ class _AddStyleScreenState extends State<AddStyleScreen> {
               );
               if (widget.styleModel == null) {
                 BlocProvider.of<StyleBloc>(context).add(AddStyleEvent(model, pickedFile));
-                Navigator.pop(context);
-                BlocProvider.of<StyleBloc>(context).add(LoadStyleEvent());
               } else {
                 BlocProvider.of<StyleBloc>(context).add(UpdateStyleEvent(model, pickedFile));
-                Navigator.pop(context);
-                BlocProvider.of<StyleBloc>(context).add(LoadStyleEvent());
               }
             }
           },

@@ -41,6 +41,12 @@ Future<List<BarberModel>> getbarber() async {
 }
 
 class AddBarberEvent extends BarberEvent {
+  final String email;
+  final String exp;
+  final String name;
+  final String description;
+
+  AddBarberEvent(this.email, this.exp, this.name, this.description);
   @override
   Stream<BarberState> applyAsync({BarberState? currentState, BarberBloc? bloc}) async* {
     try {} catch (_, stackTrace) {

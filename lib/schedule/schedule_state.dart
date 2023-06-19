@@ -17,11 +17,12 @@ class UnScheduleState extends ScheduleState {
 
 /// Initialized
 class InScheduleState extends ScheduleState {
-  final List<String> servicePackage;
+  final String style;
+  final String color;
   final String? barberID;
-  final DateTime? schedule;
+  final List<String> scheduled;
 
-  InScheduleState(this.servicePackage, this.barberID, this.schedule);
+  InScheduleState(this.style, this.color, this.barberID, this.scheduled);
 }
 
 class ErrorScheduleState extends ScheduleState {
@@ -35,3 +36,5 @@ class ErrorScheduleState extends ScheduleState {
   @override
   List<Object> get props => [errorMessage];
 }
+
+class ScheduleSuccessState extends ScheduleState {}

@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,7 @@ class _HomePageState extends State<HomePage> {
   final _homeBloc = HomeBloc(UnHomeState());
   final _loginBloc = LoginBloc(UnLoginState());
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  PlatformFile? pickedFile;
   DateTime? currentBackPressTime;
   String username = "";
   String name = "";
@@ -63,6 +65,19 @@ class _HomePageState extends State<HomePage> {
       return Future.value(true);
     }
 
+    Future selectFile() async {
+      final result = await FilePicker.platform.pickFiles();
+      if (result != null) {
+        setState(() {
+          pickedFile = result.files.first;
+        });
+        _loginBloc.add(ChangeAvatarEvent(pickedFile));
+      }
+    }
+
+    final ButtonStyle buttonStyle = TextButton.styleFrom(
+      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+    );
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
@@ -73,10 +88,21 @@ class _HomePageState extends State<HomePage> {
             tooltip: 'Menu',
             icon: Icon(Icons.menu),
             onPressed: () {
-              scaffoldKey.currentState?.openDrawer();
+              setState(() {
+                scaffoldKey.currentState?.openDrawer();
+              });
             },
           ),
           title: Text('Home'),
+          actions: [
+            TextButton(
+              onPressed: () {},
+              style: buttonStyle,
+              child: Text(
+                "Chế độ thợ",
+              ),
+            )
+          ],
         ),
         body: HomeScreen(homeBloc: _homeBloc),
         bottomNavigationBar: BottomAppBar(
@@ -86,16 +112,16 @@ class _HomePageState extends State<HomePage> {
             data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
             child: Row(
               children: <Widget>[
-                IconButton(
-                  tooltip: 'Favorite',
-                  icon: Icon(Icons.favorite),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  tooltip: 'Lịch sử',
-                  icon: Icon(Icons.history),
-                  onPressed: () {},
-                ),
+                // IconButton(
+                //   tooltip: 'Favorite',
+                //   icon: Icon(Icons.favorite),
+                //   onPressed: () {},
+                // ),
+                // IconButton(
+                //   tooltip: 'Lịch sử',
+                //   icon: Icon(Icons.history),
+                //   onPressed: () {},
+                // ),
                 Spacer(),
                 IconButton(
                   tooltip: 'Barber',
@@ -135,11 +161,25 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   children: [
                     DrawerHeader(
-                      child: FlutterLogo(size: 50),
+                      child: GestureDetector(
+                        onTap: selectFile,
+                        child: Container(
+                          decoration: BoxDecoration(shape: BoxShape.circle),
+                          child: (state.user?.imageUrl ?? "") != ""
+                              ? FadeInImage.assetNetwork(
+                                  image: state.user!.imageUrl!,
+                                  placeholder: 'lib/asset/loading-azurlane.gif',
+                                  fit: BoxFit.fill,
+                                )
+                              : Image.asset(
+                                  'lib/asset/loading-azurlane.gif',
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                      ),
                     ),
                     ListTile(
-                      leading: FlutterLogo(size: 20),
-                      title: Text(state.user?.name ?? ""),
+                      title: Text("Người dùng: ${state.user?.name ?? ""}"),
                     ),
                     ListTile(
                       title: Text("Đăng ký làm thợ"),
@@ -173,20 +213,6 @@ class _HomePageState extends State<HomePage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
-    // return BlocConsumer<LoginBloc, LoginState>(
-    //   bloc: _loginBloc,
-    //   listener: (context, state) {
-    //     if (state is LogoutState) {
-    //       Navigator.of(context).pushNamedAndRemoveUntil(LoginPage.routeName, (Route<dynamic> route) => false);
-    //     }
-    //   },
-    //   builder: (context, state) {
-    //     if (state is InLoginState)
-    //       return Center(
-    //         child: CircularProgressIndicator(),
-    //       );
-    //   },
-    // );
   }
 }
 
@@ -201,7 +227,7 @@ class QRScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: QrImage(data: "$username,$email"),
+        child: QrImageView(data: "$username,$email"),
       ),
     );
   }

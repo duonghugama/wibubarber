@@ -1,7 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:wibubarber/barber/index.dart';
 
 class BarberScreen extends StatefulWidget {
@@ -76,6 +75,15 @@ class BarberScreenState extends State<BarberScreen> {
             return ListView.builder(
               itemCount: currentState.barbers.length,
               itemBuilder: (context, index) {
+                var img = (currentState.barbers[index].avatarURL ?? "") != ""
+                    ? Image.network(
+                        currentState.barbers[index].avatarURL!,
+                        fit: BoxFit.fill,
+                      )
+                    : Image.asset(
+                        "lib/asset/barber.png",
+                        fit: BoxFit.fill,
+                      );
                 return Padding(
                   padding: EdgeInsets.all(5.0),
                   child: Card(
@@ -84,7 +92,10 @@ class BarberScreenState extends State<BarberScreen> {
                       children: [
                         ListTile(
                           visualDensity: VisualDensity(horizontal: -4, vertical: -4),
-                          // leading: CircleAvatar(),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(45),
+                            child: img,
+                          ),
                           title: Text(currentState.barbers[index].name ?? ""),
                           subtitle: Text(
                               "Kinh nghiệm: ${currentState.barbers[index].exp} \n${currentState.barbers[index].description ?? ""}"),

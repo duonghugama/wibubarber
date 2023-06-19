@@ -3,9 +3,17 @@ import 'package:localstorage/localstorage.dart';
 class UserLocalStorage {
   static final _storage = LocalStorage('LoginStorage');
   static const _keyName = 'name';
+  static const _keyUserAvatar = 'avatar';
   static const _keyUsername = 'username';
   static const _keyPassword = 'password';
   static const _keyRoles = 'role';
+
+  static Future setAvatar(String avatar) async => await _storage.setItem(_keyUserAvatar, avatar);
+
+  static Future<String> getAvatar() async {
+    await _storage.ready;
+    return await _storage.getItem(_keyUserAvatar) ?? "";
+  }
 
   static Future setRoles(List<String> roles) async => await _storage.setItem(_keyRoles, roles);
 
