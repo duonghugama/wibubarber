@@ -36,43 +36,48 @@ class SignInEvent extends LoginEvent {
   Stream<LoginState> applyAsync({LoginState? currentState, LoginBloc? bloc}) async* {
     try {
       yield UnLoginState();
-      if (username != "") {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .where("username", isEqualTo: username)
-            .get()
-            .then(
-              (value) async => {
-                if (value.size > 0)
-                  {
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
-                        email: value.docs[0].data()['email'].toString(), password: password),
-                    await UserLocalStorage.setname(value.docs[0].data()['name'].toString()),
-                    await UserLocalStorage.setUsername(username),
-                    await UserLocalStorage.setPassword(password),
-                    await UserLocalStorage.setAvatar(value.docs[0].data()['avatarURL'].toString()),
-                    LoginEvent.permission = List.from(value.docs[0].data()['permission'])
-                  }
-              },
-            );
-      } else {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      }
-      await Future.delayed(Duration(seconds: 1));
+      await login(username, password, email);
       final userLogin = FirebaseAuth.instance.currentUser ?? "";
       String name = await UserLocalStorage.getname();
       String avatarUrl = await UserLocalStorage.getAvatar();
-
       if (userLogin != "") {
-        yield InLoginState(
-            UserModel(username, FirebaseAuth.instance.currentUser!.email.toString(), [], name, avatarUrl));
+        yield InLoginState(UserModel(
+            username: username,
+            email: FirebaseAuth.instance.currentUser!.email.toString(),
+            permission: [],
+            name: name,
+            imageUrl: avatarUrl));
         await Future.delayed(Duration(seconds: 1));
         yield LoginSuccessState();
+      } else {
+        yield LoginFailedState();
+        yield InLoginState(null);
       }
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadLoginEvent', error: _, stackTrace: stackTrace);
       yield ErrorLoginState(_.toString());
     }
+  }
+}
+
+Future login(String username, String password, String email) async {
+  if (username != "") {
+    await FirebaseFirestore.instance.collection('users').where("username", isEqualTo: username).get().then(
+          (value) async => {
+            if (value.size > 0)
+              {
+                await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: value.docs[0].data()['email'].toString(), password: password),
+                await UserLocalStorage.setname(value.docs[0].data()['name'].toString()),
+                await UserLocalStorage.setUsername(username),
+                await UserLocalStorage.setPassword(password),
+                await UserLocalStorage.setAvatar(value.docs[0].data()['avatarURL'].toString()),
+                LoginEvent.permission = List.from(value.docs[0].data()['permission'])
+              }
+          },
+        );
+  } else {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
   }
 }
 
@@ -86,10 +91,28 @@ class LoadLoginEvent extends LoginEvent {
         String username = await UserLocalStorage.getUsername();
         String name = await UserLocalStorage.getname();
         String avatarUrl = await UserLocalStorage.getAvatar();
+        await FirebaseFirestore.instance
+            .collection('users')
+            .where("username", isEqualTo: username)
+            .get()
+            .then(
+              (value) async => {
+                if (value.size > 0)
+                  {
+                    LoginEvent.permission = List.from(value.docs[0].data()['permission']),
+                  },
+              },
+            );
         yield LoginSuccessState();
         await Future.delayed(Duration(seconds: 1));
         yield InLoginState(
-          UserModel(username, auth.currentUser!.email ?? "", [], name, avatarUrl),
+          UserModel(
+            username: username,
+            email: auth.currentUser!.email ?? "",
+            permission: [],
+            name: name,
+            imageUrl: avatarUrl,
+          ),
         );
       } else {
         yield InLoginState(null);
@@ -127,7 +150,8 @@ class SignUpEvent extends LoginEvent {
     try {
       FirebaseAuth.instance.createUserWithEmailAndPassword(email: email, password: password);
       final docUser = FirebaseFirestore.instance.collection('users').doc();
-      final user = UserModel(username, email, ["Customer"], "", "");
+      final user =
+          UserModel(username: username, email: email, permission: ["Customer"], name: "", imageUrl: "");
       await docUser.set(user.toJson());
       yield CreateUserSuccessState(email);
       yield InLoginState(null);
@@ -168,7 +192,12 @@ class ChangeAvatarEvent extends LoginEvent {
       batch.commit();
       final FirebaseAuth auth = FirebaseAuth.instance;
       yield InLoginState(
-        UserModel(username, auth.currentUser!.email ?? "", [], name, url),
+        UserModel(
+            username: username,
+            email: auth.currentUser!.email ?? "",
+            permission: [],
+            name: name,
+            imageUrl: url),
       );
     } catch (_, stackTrace) {
       developer.log('$_', name: 'LoadLoginEvent', error: _, stackTrace: stackTrace);

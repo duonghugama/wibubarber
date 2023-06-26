@@ -36,3 +36,5 @@ class ErrorBarberState extends BarberState {
   @override
   List<Object> get props => [errorMessage];
 }
+
+class AddBarberState extends BarberState {}

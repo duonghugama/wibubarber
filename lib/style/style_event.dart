@@ -117,6 +117,7 @@ class UpdateStyleEvent extends StyleEvent {
         var dowurl = await (await uploadTask).ref.getDownloadURL();
         url = dowurl.toString();
       }
+      if (style.imageURL != "" && image != null) url = style.imageURL ?? "";
       StyleModel styleModel = StyleModel(
         styleName: style.styleName,
         description: style.description,

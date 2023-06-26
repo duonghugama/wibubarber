@@ -13,11 +13,22 @@ class _SchedulePageState extends State<SchedulePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Đặt lịch"),
-      ),
-      body: ScheduleScreen(scheduleBloc: _scheduleBloc),
+    return Stack(
+      children: [
+        Image.asset(
+          "lib/asset/background/background.jpg",
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            title: Text("Đặt lịch"),
+          ),
+          body: ScheduleScreen(scheduleBloc: _scheduleBloc),
+        ),
+      ],
     );
   }
 }

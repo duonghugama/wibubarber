@@ -23,7 +23,9 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   LoginScreenState();
-
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     super.initState();
@@ -37,15 +39,33 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController userNameController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
     return BlocConsumer<LoginBloc, LoginState>(
         bloc: widget.loginBloc,
         listener: (context, state) {
           if (state is LoginSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              behavior: SnackBarBehavior.floating,
+              content: Text("Đăng nhập thành công!"),
+              action: SnackBarAction(
+                  label: "Đóng",
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  }),
+            ));
             Navigator.of(context).pushNamed(
               HomePage.routeName,
             );
+          }
+          if (state is LoginFailedState) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              behavior: SnackBarBehavior.floating,
+              content: Text("Sai tên đăng nhập hoặc mật khẩu!"),
+              action: SnackBarAction(
+                  label: "Đóng",
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  }),
+            ));
           }
         },
         builder: (
@@ -59,96 +79,117 @@ class LoginScreenState extends State<LoginScreen> {
           }
           if (currentState is ErrorLoginState) {
             return Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(currentState.errorMessage),
-                Padding(
-                  padding: EdgeInsets.only(top: 32.0),
-                  child: ElevatedButton(
-                    child: Text("Load lại"),
-                    onPressed: () {
-                      widget.loginBloc.add(LoadLoginEvent());
-                    },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(currentState.errorMessage),
+                  Padding(
+                    padding: EdgeInsets.only(top: 32.0),
+                    child: ElevatedButton(
+                      child: Text("Load lại"),
+                      onPressed: () {
+                        widget.loginBloc.add(LoadLoginEvent());
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ));
+                ],
+              ),
+            );
           }
           if (currentState is InLoginState) {
-            userNameController.text = "Admin";
-            passwordController.text = "ditconmemay2";
+            // userNameController.text = "Admin";
+            // passwordController.text = "ditconmemay2";
 
             return Center(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(10.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    FlutterLogo(size: 160),
-                    TextField(
-                      controller: userNameController,
-                      decoration: InputDecoration(
-                        labelText: "Tên đăng nhập hoặc Email",
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                      ),
-                      keyboardType: TextInputType.text,
-                    ),
-                    SizedBox(height: 10),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: "Password",
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                      ),
-                      keyboardType: TextInputType.visiblePassword,
-                    ),
-                    Row(
-                      children: [],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (EmailValidator.validate(userNameController.text)) {
-                          widget.loginBloc.add(
-                            SignInEvent("", userNameController.text, passwordController.text),
-                          );
-                        } else {
-                          widget.loginBloc.add(
-                            SignInEvent(userNameController.text, "", passwordController.text),
-                          );
-                        }
-                      },
-                      child: Text("Đăng nhập"),
-                    ),
-                    Row(
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "Bạn chưa có tài khoản? ",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              TextSpan(
-                                text: "Đăng ký",
-                                style: TextStyle(color: Colors.blue),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => SignUpScreen(loginBloc: widget.loginBloc),
-                                        ),
-                                      ),
-                              ),
-                            ],
-                          ),
+              child: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset("lib/asset/Logo1.png"),
+                      TextFormField(
+                        controller: userNameController,
+                        decoration: InputDecoration(
+                          labelText: "Tên đăng nhập hoặc Email",
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          filled: true,
+                          fillColor: Colors.white38,
                         ),
-                      ],
-                    ),
-                  ],
+                        style: TextStyle(),
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nhập tên đăng nhập';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          filled: true,
+                          fillColor: Colors.white38,
+                        ),
+                        keyboardType: TextInputType.visiblePassword,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nhập mật khẩu';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            if (EmailValidator.validate(userNameController.text)) {
+                              widget.loginBloc.add(
+                                SignInEvent("", userNameController.text, passwordController.text),
+                              );
+                            } else {
+                              widget.loginBloc.add(
+                                SignInEvent(userNameController.text, "", passwordController.text),
+                              );
+                            }
+                          }
+                        },
+                        child: Text("Đăng nhập"),
+                      ),
+                      Row(
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "Bạn chưa có tài khoản? ",
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                                TextSpan(
+                                  text: "Đăng ký",
+                                  style: TextStyle(color: Colors.blue),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => SignUpScreen(loginBloc: widget.loginBloc),
+                                          ),
+                                        ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

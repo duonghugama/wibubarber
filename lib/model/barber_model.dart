@@ -11,12 +11,8 @@ class BarberModel extends Equatable {
   @override
   List<Object?> get props => [];
 
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'email': email,
-        'description': description,
-        'exp': exp,
-      };
+  Map<String, dynamic> toJson() =>
+      {'name': name, 'email': email, 'description': description, 'exp': exp, 'avatarURL': avatarURL};
   factory BarberModel.fromJson(Map json) => BarberModel(
         avatarURL: json["avatarURL"],
         email: json['email'],

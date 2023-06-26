@@ -15,10 +15,6 @@ import 'package:wibubarber/style/index.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // await FirebaseAppCheck.instance.activate(
-  //   webRecaptchaSiteKey: 'recaptcha-v3-site-key',
-  //   androidProvider: AndroidProvider.debug,
-  // );
   runApp(const MyApp());
 }
 
@@ -30,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoginBloc>(create: (context) => LoginBloc(InLoginState(null))),
-        BlocProvider<HomeBloc>(create: (context) => HomeBloc(InHomeState())),
+        BlocProvider<HomeBloc>(create: (context) => HomeBloc(InHomeState(null, null, null, null))),
         BlocProvider<StyleBloc>(create: (context) => StyleBloc(InStyleState(null, null))),
         BlocProvider<BarberBloc>(create: (context) => BarberBloc(InBarberState([]))),
         BlocProvider<ScheduleBloc>(create: (context) => ScheduleBloc(InScheduleState("", "", null, []))),
@@ -41,8 +37,60 @@ class MyApp extends StatelessWidget {
           title: "WibuBarber",
           initialRoute: LoginPage.routeName,
           onGenerateRoute: onGenerateRoute,
-          themeMode: ThemeMode.dark,
-          // theme: ThemeData(fontFamily: 'Anime'),
+          theme: ThemeData(
+            brightness: Brightness.light,
+            appBarTheme: AppBarTheme(
+              color: Colors.white54,
+              titleTextStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              iconTheme: IconThemeData(
+                color: Colors.black,
+              ),
+            ),
+            iconTheme: IconThemeData(color: Color.fromARGB(255, 101, 204, 176)),
+            iconButtonTheme: IconButtonThemeData(
+              style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.cyan)),
+            ),
+            primaryColor: Color.fromARGB(255, 101, 204, 176),
+            floatingActionButtonTheme: FloatingActionButtonThemeData(
+              backgroundColor: Color.fromARGB(255, 101, 204, 176),
+            ),
+            tabBarTheme: TabBarTheme(
+              labelColor: Colors.white,
+              labelStyle: TextStyle(color: Colors.white),
+              indicator: UnderlineTabIndicator(
+                borderSide: BorderSide(color: Color.fromARGB(255, 101, 204, 176), width: 10),
+              ),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              floatingLabelStyle: TextStyle(color: Colors.white),
+              focusColor: Colors.white,
+              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+              filled: true,
+              fillColor: Colors.white60,
+              // enabledBorder: OutlineInputBorder(
+              //   borderSide: BorderSide(color: Colors.white),
+              // ),
+              // labelStyle: TextStyle(color: Colors.white),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ),
+            chipTheme: ChipThemeData(backgroundColor: Colors.white70),
+            dropdownMenuTheme: DropdownMenuThemeData(
+              inputDecorationTheme: InputDecorationTheme(fillColor: Colors.white, filled: true),
+              menuStyle: MenuStyle(
+                backgroundColor: MaterialStateProperty.resolveWith(
+                  (states) => Colors.white,
+                ),
+              ),
+            ),
+            canvasColor: Colors.transparent,
+            fontFamily: 'Anime',
+          ),
         );
       }),
     );

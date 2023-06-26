@@ -87,6 +87,7 @@ class BarberScreenState extends State<BarberScreen> {
                 return Padding(
                   padding: EdgeInsets.all(5.0),
                   child: Card(
+                    color: Colors.white70,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -96,14 +97,20 @@ class BarberScreenState extends State<BarberScreen> {
                             borderRadius: BorderRadius.circular(45),
                             child: img,
                           ),
-                          title: Text(currentState.barbers[index].name ?? ""),
+                          title: Text(
+                            currentState.barbers[index].name ?? "",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           subtitle: Text(
                               "Kinh nghiệm: ${currentState.barbers[index].exp} \n${currentState.barbers[index].description ?? ""}"),
                           trailing: PopupMenuButton(
                             itemBuilder: (context) => <PopupMenuEntry<TextButton>>[
                               PopupMenuItem<TextButton>(
                                 child: TextButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    widget._barberBloc
+                                        .add(DeleteBarber(currentState.barbers[index].email ?? ""));
+                                  },
                                   child: Text(
                                     "Đuổi việc",
                                     style: TextStyle(color: Colors.red),

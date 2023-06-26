@@ -80,10 +80,10 @@ class SelectBarberAndDatetimeEvent extends ScheduleEvent {
 Future<bool> getSchedule(String barber, DateTime dateTime) async {
   final ref = FirebaseDatabase.instance.ref();
   final b = barber.substring(0, barber.indexOf("@"));
-  final String day = dateTime.day < 0 ? "0${dateTime.day}" : dateTime.day.toString();
-  final String month = dateTime.month < 0 ? "0${dateTime.month}" : dateTime.month.toString();
-  final snapshot = await ref.child('schedule/$b/$day$month${dateTime.year}').get();
-  ScheduleEvent.barber = b;
+  final String day = dateTime.day < 10 ? "0${dateTime.day}" : dateTime.day.toString();
+  final String month = dateTime.month < 10 ? "0${dateTime.month}" : dateTime.month.toString();
+  final snapshot = await ref.child('schedule/$b/${dateTime.year}$month$day').get();
+  ScheduleEvent.barber = barber;
   ScheduleEvent.scheduled = [];
   if (snapshot.exists) {
     for (final child in snapshot.children) {
@@ -104,61 +104,61 @@ class AddSchedule extends ScheduleEvent {
   Stream<ScheduleState> applyAsync({ScheduleState? currentState, ScheduleBloc? bloc}) async* {
     try {
       // final date = ScheduleEvent.dateTime;
-      final String customerEmail = FirebaseAuth.instance.currentUser!.email.toString();
-      Map<String, dynamic> map = {
-        ScheduleEvent.barber: {
-          "${date.day}${date.month}${date.year}": {
-            "${time.toString().padLeft(2, "0")}:00": {
-              "color": ScheduleEvent.colorName,
-              "style": ScheduleEvent.stylename,
-              "customerEmail": customerEmail
-            },
-          },
-        },
-      };
-      DatabaseReference dataRef = FirebaseDatabase.instance.ref("schedule");
-      DatabaseEvent check = await dataRef
-          .child(
-              "${ScheduleEvent.barber}/${date.day}${date.month}${date.year}/${time.toString().padLeft(2, "0")}:00")
-          .once();
-      if (check.snapshot.exists)
-        dataRef
-            .child(
-                "${ScheduleEvent.barber}/${date.day}${date.month}${date.year}/${time.toString().padLeft(2, "0")}:00")
-            .update({
-          "color": ScheduleEvent.colorName,
-          "style": ScheduleEvent.stylename,
-          "customerEmail": customerEmail
-        });
-      else {
-        DatabaseEvent check1 = await dataRef.child(ScheduleEvent.barber).once();
-        if (check1.snapshot.exists) {
-          DatabaseEvent check2 =
-              await dataRef.child("${ScheduleEvent.barber}/${date.day}${date.month}${date.year}").once();
-          if (check2.snapshot.exists)
-            dataRef.child("${ScheduleEvent.barber}/${date.day}${date.month}${date.year}").update({
-              "${time.toString().padLeft(2, "0")}:00": {
-                "color": ScheduleEvent.colorName,
-                "style": ScheduleEvent.stylename,
-                "customerEmail": customerEmail
-              },
-            });
-          else
-            dataRef.child(ScheduleEvent.barber).update({
-              "${date.day}${date.month}${date.year}": {
-                "${time.toString().padLeft(2, "0")}:00": {
-                  "color": ScheduleEvent.colorName,
-                  "style": ScheduleEvent.stylename,
-                  "customerEmail": customerEmail
-                },
-              },
-            });
-        } else
-          dataRef
-              .child(
-                  "${ScheduleEvent.barber}/${date.day}${date.month}${date.year}/${time.toString().padLeft(2, "0")}:00")
-              .update(map);
-      }
+      yield UnScheduleState();
+      // final String customerEmail = FirebaseAuth.instance.currentUser!.email.toString();
+      // final barber = ScheduleEvent.barber.substring(0, ScheduleEvent.barber.indexOf("@"));
+      // Map<String, dynamic> map = {
+      //   barber: {
+      //     "${date.year}$month$day": {
+      //       "${time.toString().padLeft(2, "0")}:00": {
+      //         "color": ScheduleEvent.colorName,
+      //         "style": ScheduleEvent.stylename,
+      //         "customerEmail": customerEmail
+      //       },
+      //     },
+      //   },
+      // };
+      // DatabaseReference dataRef = FirebaseDatabase.instance.ref("schedule");
+      // DatabaseEvent check = await dataRef
+      //     .child("$barber/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00")
+      //     .once();
+      // if (check.snapshot.exists)
+      //   dataRef
+      //       .child("$barber/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00")
+      //       .update({
+      //     "color": ScheduleEvent.colorName,
+      //     "style": ScheduleEvent.stylename,
+      //     "customerEmail": customerEmail
+      //   });
+      // else {
+      //   DatabaseEvent check1 = await dataRef.child(barber).once();
+      //   if (check1.snapshot.exists) {
+      //     DatabaseEvent check2 = await dataRef.child("$barber/${date.year}$month$day").once();
+      //     if (check2.snapshot.exists)
+      //       dataRef.child("$barber/${date.year}$month$day").update({
+      //         "${time.toString().padLeft(2, "0")}:00": {
+      //           "color": ScheduleEvent.colorName,
+      //           "style": ScheduleEvent.stylename,
+      //           "customerEmail": customerEmail
+      //         },
+      //       });
+      //     else
+      //       dataRef.child(barber).update({
+      //         "${date.year}$month$day": {
+      //           "${time.toString().padLeft(2, "0")}:00": {
+      //             "color": ScheduleEvent.colorName,
+      //             "style": ScheduleEvent.stylename,
+      //             "customerEmail": customerEmail
+      //           },
+      //         },
+      //       });
+      //   } else
+      //     dataRef
+      //         .child("$barber/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00")
+      //         .update(map);
+      // }
+      await addSchedule(date, time);
+      await addHistory(date, time);
       yield ScheduleSuccessState();
       ScheduleEvent.barber = "";
       ScheduleEvent.colorName = "";
@@ -169,5 +169,119 @@ class AddSchedule extends ScheduleEvent {
       developer.log('$_', name: 'LoadScheduleEvent', error: _, stackTrace: stackTrace);
       yield ErrorScheduleState(_.toString());
     }
+  }
+}
+
+Future addSchedule(DateTime date, int time) async {
+  final String customerEmail = FirebaseAuth.instance.currentUser!.email.toString();
+  final barber = ScheduleEvent.barber.substring(0, ScheduleEvent.barber.indexOf("@"));
+  String month = date.month < 10 ? "0${date.month}" : date.month.toString();
+  String day = date.day < 10 ? "0${date.day}" : date.day.toString();
+  Map<String, dynamic> map = {
+    // barber: {
+    //   "${date.year}$month$day": {
+    //     "${time.toString().padLeft(2, "0")}:00": {
+    "color": ScheduleEvent.colorName,
+    "style": ScheduleEvent.stylename,
+    "customerEmail": customerEmail
+    //     },
+    //   },
+    // },
+  };
+  DatabaseReference dataRef = FirebaseDatabase.instance.ref("schedule");
+
+  DatabaseEvent check =
+      await dataRef.child("$barber/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00").once();
+  if (check.snapshot.exists)
+    dataRef.child("$barber/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00").update(
+        {"color": ScheduleEvent.colorName, "style": ScheduleEvent.stylename, "customerEmail": customerEmail});
+  else {
+    DatabaseEvent check1 = await dataRef.child(barber).once();
+    if (check1.snapshot.exists) {
+      DatabaseEvent check2 = await dataRef.child("$barber/${date.year}$month$day").once();
+      if (check2.snapshot.exists)
+        dataRef.child("$barber/${date.year}$month$day").update({
+          "${time.toString().padLeft(2, "0")}:00": {
+            "color": ScheduleEvent.colorName,
+            "style": ScheduleEvent.stylename,
+            "customerEmail": customerEmail
+          },
+        });
+      else
+        dataRef.child(barber).update({
+          "${date.year}$month$day": {
+            "${time.toString().padLeft(2, "0")}:00": {
+              "color": ScheduleEvent.colorName,
+              "style": ScheduleEvent.stylename,
+              "customerEmail": customerEmail
+            },
+          },
+        });
+    } else
+      dataRef.child("$barber/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00").update(map);
+  }
+}
+
+Future addHistory(DateTime date, int time) async {
+  String customerEmail = FirebaseAuth.instance.currentUser!.email!
+      .substring(0, FirebaseAuth.instance.currentUser!.email!.indexOf("@"));
+  String barberEmail = ScheduleEvent.barber;
+  String month = date.month < 10 ? "0${date.month}" : date.month.toString();
+  String day = date.day < 10 ? "0${date.day}" : date.day.toString();
+  Map<String, dynamic> map = {
+    // customerEmail: {
+    //   "${date.year}$month$day": {
+    //     "${time.toString().padLeft(2, "0")}:00": {
+    "color": ScheduleEvent.colorName,
+    "style": ScheduleEvent.stylename,
+    "barberEmail": barberEmail,
+    "time": "${time.toString().padLeft(2, "0")}:00",
+    "isConfirm": false
+    //     },
+    //   },
+    // },
+  };
+  DatabaseReference dataRef = FirebaseDatabase.instance.ref("history");
+  DatabaseEvent check = await dataRef
+      .child("$customerEmail/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00")
+      .once();
+  if (check.snapshot.exists)
+    dataRef.child("$customerEmail/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00").update({
+      "color": ScheduleEvent.colorName,
+      "style": ScheduleEvent.stylename,
+      "barberEmail": barberEmail,
+      "time": "${time.toString().padLeft(2, "0")}:00",
+      "isConfirm": false
+    });
+  else {
+    DatabaseEvent check1 = await dataRef.child(customerEmail).once();
+    if (check1.snapshot.exists) {
+      DatabaseEvent check2 = await dataRef.child("$customerEmail/${date.year}$month$day").once();
+      if (check2.snapshot.exists)
+        dataRef.child("$customerEmail/${date.year}$month$day").update({
+          "${time.toString().padLeft(2, "0")}:00": {
+            "color": ScheduleEvent.colorName,
+            "style": ScheduleEvent.stylename,
+            "barberEmail": barberEmail,
+            "time": "${time.toString().padLeft(2, "0")}:00",
+            "isConfirm": false
+          },
+        });
+      else
+        dataRef.child(customerEmail).update({
+          "${date.year}$month$day": {
+            "${time.toString().padLeft(2, "0")}:00": {
+              "color": ScheduleEvent.colorName,
+              "style": ScheduleEvent.stylename,
+              "barberEmail": barberEmail,
+              "time": "${time.toString().padLeft(2, "0")}:00",
+              "isConfirm": false
+            },
+          },
+        });
+    } else
+      dataRef
+          .child("$customerEmail/${date.year}$month$day/${time.toString().padLeft(2, "0")}:00")
+          .update(map);
   }
 }

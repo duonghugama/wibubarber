@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:wibubarber/barber/barber_detail_screen.dart';
 import 'package:wibubarber/barber/index.dart';
+import 'package:wibubarber/login/index.dart';
 
 class BarberPage extends StatefulWidget {
   static const String routeName = '/barber';
@@ -17,21 +18,33 @@ class _BarberPageState extends State<BarberPage> {
   late String qr = "";
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Barber"),
-      ),
-      body: BarberScreen(barberBloc: _barberBloc),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => QRScanningPage(barberBloc: _barberBloc),
-            ),
-          );
-        },
-      ),
+    return Stack(
+      children: [
+        Image.asset(
+          "lib/asset/background/background1.jpg",
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          appBar: AppBar(
+            title: Text("Thợ cắt tóc"),
+          ),
+          body: BarberScreen(barberBloc: _barberBloc),
+          floatingActionButton: LoginEvent.permission.contains("Admin")
+              ? FloatingActionButton(
+                  child: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => QRScanningPage(barberBloc: _barberBloc),
+                      ),
+                    );
+                  },
+                )
+              : null,
+        ),
+      ],
     );
   }
 }
@@ -72,19 +85,33 @@ class _QRScanningPageState extends State<QRScanningPage> {
 
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
+    secondPageRoute() async {
+      controller.pauseCamera();
+      var value = await Navigator.of(context)
+          .push(MaterialPageRoute(
+            builder: (context) => BarberDetailScreen(
+              barberBloc: widget._barberBloc,
+              email: result!.code!.split(',')[1].toString(),
+              name: result!.code!.split(',')[0].toString(),
+            ),
+          ))
+          .then((value) => controller.resumeCamera());
+    }
+
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
       });
       if (result?.code != null) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => BarberDetailScreen(
-            barberBloc: widget._barberBloc,
-            email: result!.code!.split(',')[0].toString(),
-            name: result!.code!.split(',')[1].toString(),
-          ),
-        ));
-        // showAlertDialog(context, result!.code!.split(',')[1].toString());
+        // controller.pauseCamera();
+        // Navigator.of(context).push(MaterialPageRoute(
+        //   builder: (context) => BarberDetailScreen(
+        //     barberBloc: widget._barberBloc,
+        //     email: result!.code!.split(',')[0].toString(),
+        //     name: result!.code!.split(',')[1].toString(),
+        //   ),
+        // ));
+        secondPageRoute();
       }
     });
   }
@@ -93,6 +120,7 @@ class _QRScanningPageState extends State<QRScanningPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         alignment: Alignment.center,
         children: <Widget>[
           QRView(
@@ -122,35 +150,3 @@ class _QRScanningPageState extends State<QRScanningPage> {
     );
   }
 }
-
-// showAlertDialog(BuildContext context, String username) {
-//   // set up the buttons
-//   Widget cancelButton = TextButton(
-//     child: Text("Không"),
-//     onPressed: () {
-//       Navigator.of(context).pop();
-//     },
-//   );
-//   Widget continueButton = TextButton(
-//     child: Text("Xác nhận"),
-//     onPressed: () {},
-//   );
-
-//   // set up the AlertDialog
-//   AlertDialog alert = AlertDialog(
-//     title: Text("Thông báo"),
-//     content: Text("Xác nhận $username làm thợ của cửa hàng?"),
-//     actions: [
-//       cancelButton,
-//       continueButton,
-//     ],
-//   );
-
-//   // show the dialog
-//   showDialog(
-//     context: context,
-//     builder: (BuildContext context) {
-//       return alert;
-//     },
-//   );
-// }

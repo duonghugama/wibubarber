@@ -13,8 +13,19 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: LoginScreen(loginBloc: loginBloc),
+    return Stack(
+      children: [
+        Image.asset(
+          "lib/asset/background/background1.jpg",
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          backgroundColor: Colors.transparent,
+          body: LoginScreen(loginBloc: loginBloc),
+        ),
+      ],
     );
   }
 }

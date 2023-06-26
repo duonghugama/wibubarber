@@ -54,7 +54,6 @@ class StyleScreenState extends State<StyleScreen> {
   }
 
   TextStyle whiteText = TextStyle(color: Colors.white, fontSize: 16);
-  TextStyle yellowText = TextStyle(color: Colors.yellow[300], fontSize: 18);
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +63,7 @@ class StyleScreenState extends State<StyleScreen> {
         if (state is ErrorStyleState) {
           final snackbar = SnackBar(
             content: Text("Có lỗi sảy ra"),
+            behavior: SnackBarBehavior.floating,
           );
           ScaffoldMessenger.of(context).showSnackBar(snackbar);
         }
@@ -103,12 +103,12 @@ class StyleScreenState extends State<StyleScreen> {
               ),
               itemCount: currentState.styles?.length ?? 0,
               itemBuilder: (context, index) {
-                List<String> timeParts = currentState.styles![index].styleTime!.split(':');
-                Duration duration = Duration(
-                  hours: int.parse(timeParts[0]),
-                  minutes: int.parse(timeParts[1]),
-                  seconds: int.parse(timeParts[2]),
-                );
+                // List<String> timeParts = currentState.styles![index].styleTime!.split(':');
+                // Duration duration = Duration(
+                //   hours: int.parse(timeParts[0]),
+                //   minutes: int.parse(timeParts[1]),
+                //   seconds: int.parse(timeParts[2]),
+                // );
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -124,6 +124,7 @@ class StyleScreenState extends State<StyleScreen> {
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
+                      side: BorderSide(width: 2, color: Colors.white24),
                     ),
                     elevation: 2,
                     child: Stack(
@@ -148,22 +149,25 @@ class StyleScreenState extends State<StyleScreen> {
                                 ],
                               ),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "${currentState.styles![index].styleName ?? ""} - ${duration.inMinutes} phút",
-                                  style: whiteText,
-                                ),
-                                Text(
-                                  currentState.styles?[index].description ?? "",
-                                  style: whiteText,
-                                ),
-                                Text(
-                                  "Giá: ${f.format(currentState.styles![index].stylePrice! / 1000)}",
-                                  style: whiteText,
-                                ),
-                              ],
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 5),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    (currentState.styles![index].styleName ?? "").toUpperCase(),
+                                    style: whiteText,
+                                  ),
+                                  Text(
+                                    currentState.styles?[index].description ?? "",
+                                    style: whiteText,
+                                  ),
+                                  Text(
+                                    "Giá: ${f.format(currentState.styles![index].stylePrice! / 1000)}",
+                                    style: whiteText,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

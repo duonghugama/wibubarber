@@ -82,175 +82,196 @@ class _StyleDetailScreenState extends State<StyleDetailScreen> {
           Navigator.of(context).pop();
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.styleModel == null ? "Thêm style" : widget.styleModel!.styleName ?? "Sửa style"),
-          actions: [
-            widget.styleModel != null
-                ? IconButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: Text("Xác nhận xoá"),
-                          content: Text("Bạn có chắc xoá kiểu tóc này?"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("Chưa"),
+      child: Stack(
+        children: [
+          Image.asset(
+            "lib/asset/background/background1.jpg",
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              title: Text(
+                  widget.styleModel == null ? "Thêm style" : widget.styleModel!.styleName ?? "Sửa style"),
+              actions: [
+                widget.styleModel != null
+                    ? IconButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text("Xác nhận xoá"),
+                              content: Text("Bạn có chắc xoá kiểu tóc này?"),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Chưa"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    if (widget.styleModel != null) {
+                                      BlocProvider.of<StyleBloc>(context)
+                                          .add(DeleteStyleEvent(widget.styleModel!));
+                                      Navigator.pop(context);
+                                    }
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Đồng ý"),
+                                ),
+                              ],
                             ),
-                            TextButton(
-                              onPressed: () {
-                                if (widget.styleModel != null) {
-                                  BlocProvider.of<StyleBloc>(context)
-                                      .add(DeleteStyleEvent(widget.styleModel!));
-                                  Navigator.pop(context);
-                                }
-                                Navigator.of(context).pop();
-                              },
-                              child: Text("Đồng ý"),
-                            ),
-                          ],
+                          );
+                        },
+                        icon: Icon(Icons.delete),
+                      )
+                    : Container(),
+              ],
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onTap: selectFile,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            width: MediaQuery.of(context).size.width * 0.5,
+                            color: Colors.grey[300],
+                            child: _image(pickedFile?.path),
+                          ),
                         ),
-                      );
-                    },
-                    icon: Icon(Icons.delete),
-                  )
-                : Container(),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: selectFile,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.3,
-                        width: MediaQuery.of(context).size.width * 0.5,
-                        color: Colors.grey[300],
-                        child: _image(pickedFile?.path),
                       ),
-                    ),
+                      SizedBox(height: 10),
+                      TextFormField(
+                        controller: styleNameController,
+                        decoration: InputDecoration(
+                          labelText: "Tên style",
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          filled: true,
+                          fillColor: Colors.white38,
+                        ),
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nhập tên';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      TextFormField(
+                        controller: stylePriceController,
+                        decoration: InputDecoration(
+                          labelText: "Giá",
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          filled: true,
+                          fillColor: Colors.white38,
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nhập giá của style';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      // DropdownButtonHideUnderline(
+                      //   child: DropdownButtonFormField<String>(
+                      //     decoration: InputDecoration(
+                      //       labelText: "Loại style",
+                      //       border: OutlineInputBorder(),
+                      //       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                      //     ),
+                      //     value: drowdownValue,
+                      //     items: styleTypes
+                      //         .map((e) => DropdownMenuItem<String>(
+                      //               value: e,
+                      //               child: Text(e),
+                      //             ))
+                      //         .toList(),
+                      //     onChanged: (value) {
+                      //       setState(() {
+                      //         drowdownValue = value!;
+                      //       });
+                      //     },
+                      //   ),
+                      // ),
+                      // SizedBox(height: 10),
+                      TextFormField(
+                        controller: styleTimeController,
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: "Thời gian",
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          filled: true,
+                          fillColor: Colors.white38,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            openDialog();
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nhập khoảng thời gian thực hiện';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 10),
+                      TextFormField(
+                        controller: styleDecriptionController,
+                        decoration: InputDecoration(
+                          labelText: "Mô tả",
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+                          filled: true,
+                          fillColor: Colors.white38,
+                        ),
+                        keyboardType: TextInputType.text,
+                      ),
+                      SizedBox(height: 10),
+                    ],
                   ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: styleNameController,
-                    decoration: InputDecoration(
-                      labelText: "Tên style",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    ),
-                    keyboardType: TextInputType.text,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nhập tên';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: stylePriceController,
-                    decoration: InputDecoration(
-                      labelText: "Giá",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nhập giá của style';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  // DropdownButtonHideUnderline(
-                  //   child: DropdownButtonFormField<String>(
-                  //     decoration: InputDecoration(
-                  //       labelText: "Loại style",
-                  //       border: OutlineInputBorder(),
-                  //       contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                  //     ),
-                  //     value: drowdownValue,
-                  //     items: styleTypes
-                  //         .map((e) => DropdownMenuItem<String>(
-                  //               value: e,
-                  //               child: Text(e),
-                  //             ))
-                  //         .toList(),
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         drowdownValue = value!;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: styleTimeController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: "Thời gian",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        openDialog();
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nhập khoảng thời gian thực hiện';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 10),
-                  TextFormField(
-                    controller: styleDecriptionController,
-                    decoration: InputDecoration(
-                      labelText: "Mô tả",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    ),
-                    keyboardType: TextInputType.text,
-                  ),
-                  SizedBox(height: 10),
-                ],
+                ),
               ),
             ),
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  StyleModel model = StyleModel(
+                    // styleType: drowdownValue,
+                    styleTime: styleTimeController.text,
+                    styleName: styleNameController.text,
+                    stylePrice: int.parse(stylePriceController.text),
+                    description: styleDecriptionController.text,
+                    imageURL: widget.styleModel?.imageURL ?? "",
+                  );
+                  if (widget.styleModel == null) {
+                    BlocProvider.of<StyleBloc>(context).add(AddStyleEvent(model, pickedFile));
+                  } else {
+                    BlocProvider.of<StyleBloc>(context).add(UpdateStyleEvent(model, pickedFile));
+                  }
+                }
+              },
+              child: Icon(Icons.save),
+            ),
           ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              StyleModel model = StyleModel(
-                // styleType: drowdownValue,
-                styleTime: styleTimeController.text,
-                styleName: styleNameController.text,
-                stylePrice: int.parse(stylePriceController.text),
-                description: styleDecriptionController.text,
-              );
-              if (widget.styleModel == null) {
-                BlocProvider.of<StyleBloc>(context).add(AddStyleEvent(model, pickedFile));
-              } else {
-                BlocProvider.of<StyleBloc>(context).add(UpdateStyleEvent(model, pickedFile));
-              }
-            }
-          },
-          child: Icon(Icons.save),
-        ),
+        ],
       ),
     );
   }
